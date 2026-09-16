@@ -1,1867 +1,1128 @@
+```html
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>국내 주가 방향성 예측 2차 버전</title>
-
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --green: #15803d;
-      --red: #dc2626;
-      --gray-bg: #f3f4f6;
-      --gray-border: #d1d5db;
-      --gray-text: #6b7280;
-      --dark: #111827;
-      --white: #ffffff;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 20px;
-      background: var(--gray-bg);
-      color: var(--dark);
-      font-family:
-        Arial,
-        "Noto Sans KR",
-        "Malgun Gothic",
-        sans-serif;
-    }
-
-    .container {
-      max-width: 1250px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-
-    h2 {
-      margin: 0 0 16px;
-      font-size: 21px;
-    }
-
-    h3 {
-      margin: 0 0 12px;
-      font-size: 17px;
-    }
-
-    .subtitle {
-      color: var(--gray-text);
-      margin-bottom: 22px;
-      line-height: 1.6;
-    }
-
-    .card {
-      background: var(--white);
-      border: 1px solid var(--gray-border);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    select {
-      border: 1px solid var(--gray-border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
-      background: white;
-    }
-
-    input[type="text"] {
-      min-width: 180px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      transition: 0.15s;
-    }
-
-    button:hover {
-      opacity: 0.88;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .btn-danger {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .btn-green {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .btn-small {
-      padding: 7px 10px;
-      font-size: 12px;
-    }
-
-    .stock-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .stock-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--gray-border);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: #f9fafb;
-    }
-
-    .stock-chip.active {
-      border-color: var(--primary);
-      background: #eff6ff;
-      color: #1d4ed8;
-      font-weight: 700;
-    }
-
-    .stock-chip button {
-      padding: 0;
-      background: transparent;
-      color: #9ca3af;
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    .stock-chip button:hover {
-      color: var(--red);
-    }
-
-    .selected-stock-title {
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    .score-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .score-box {
-      border: 1px solid var(--gray-border);
-      border-radius: 12px;
-      padding: 16px;
-      background: #fafafa;
-    }
-
-    .score-box label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .weight {
-      color: var(--gray-text);
-      font-size: 12px;
-      font-weight: normal;
-    }
-
-    .score-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--primary);
-    }
-
-    .score-number {
-      min-width: 42px;
-      text-align: right;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .result-panel {
-      margin-top: 20px;
-      padding: 22px;
-      border-radius: 12px;
-      background: #f9fafb;
-      border: 1px solid var(--gray-border);
-    }
-
-    .result-main {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .result-direction {
-      font-size: 30px;
-      font-weight: 800;
-    }
-
-    .up {
-      color: var(--green);
-    }
-
-    .down {
-      color: var(--red);
-    }
-
-    .flat {
-      color: #6b7280;
-    }
-
-    .result-score {
-      font-size: 18px;
-      color: #374151;
-    }
-
-    .probability-note {
-      color: var(--gray-text);
-      font-size: 13px;
-      margin-top: 12px;
-      line-height: 1.6;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .stat-box {
-      border: 1px solid var(--gray-border);
-      border-radius: 12px;
-      padding: 16px;
-      background: #fafafa;
-    }
-
-    .stat-label {
-      color: var(--gray-text);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 25px;
-      font-weight: 800;
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 760px;
-      font-size: 13px;
-    }
-
-    th,
-    td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 11px 8px;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    th {
-      background: #f9fafb;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    td {
-      white-space: nowrap;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge-up {
-      color: #166534;
-      background: #dcfce7;
-    }
-
-    .badge-down {
-      color: #991b1b;
-      background: #fee2e2;
-    }
-
-    .badge-flat {
-      color: #4b5563;
-      background: #e5e7eb;
-    }
-
-    .badge-pending {
-      color: #92400e;
-      background: #fef3c7;
-    }
-
-    .correct {
-      color: var(--green);
-      font-weight: 800;
-    }
-
-    .incorrect {
-      color: var(--red);
-      font-weight: 800;
-    }
-
-    .pending {
-      color: #92400e;
-      font-weight: 700;
-    }
-
-    .empty {
-      color: var(--gray-text);
-      text-align: center;
-      padding: 25px;
-    }
-
-    .notice {
-      border-left: 4px solid var(--primary);
-      background: #eff6ff;
-      padding: 13px 15px;
-      line-height: 1.6;
-      font-size: 13px;
-      margin-bottom: 15px;
-    }
-
-    .warning {
-      border-left: 4px solid #f59e0b;
-      background: #fffbeb;
-      padding: 13px 15px;
-      line-height: 1.6;
-      font-size: 13px;
-      margin-bottom: 15px;
-    }
-
-    .footer-note {
-      color: var(--gray-text);
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 20px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 900px) {
-      .score-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 12px;
-      }
-
-      h1 {
-        font-size: 23px;
-      }
-
-      .card {
-        padding: 15px;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .result-direction {
-        font-size: 25px;
-      }
-
-      input[type="text"] {
-        width: 100%;
-      }
-
-      .form-row {
-        align-items: stretch;
-      }
-
-      .form-row input[type="text"] {
-        flex: 1;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f172a">
+<title>주가 방향성 분석 대시보드</title>
+
+<style>
+:root{
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --green:#16a34a;
+  --green-bg:#dcfce7;
+  --red:#dc2626;
+  --red-bg:#fee2e2;
+  --yellow:#d97706;
+  --yellow-bg:#fef3c7;
+  --shadow:0 4px 16px rgba(15,23,42,.06);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans KR","Malgun Gothic",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.header{
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  color:#fff;
+  padding:28px 20px 34px;
+}
+
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+}
+
+.header h1{
+  margin:0 0 8px;
+  font-size:clamp(22px,4vw,32px);
+}
+
+.header p{
+  margin:0;
+  color:#cbd5e1;
+  font-size:14px;
+}
+
+.container{
+  max-width:1200px;
+  margin:-18px auto 40px;
+  padding:0 16px;
+  position:relative;
+}
+
+.toolbar{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.toolbar-left,.toolbar-right{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+button{
+  border:0;
+  border-radius:9px;
+  padding:10px 14px;
+  font-weight:700;
+  transition:.15s;
+}
+
+button:hover{
+  transform:translateY(-1px);
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--primary-dark);
+}
+
+.btn-secondary{
+  background:#e2e8f0;
+  color:#334155;
+}
+
+.btn-danger{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+.btn-small{
+  padding:7px 10px;
+  font-size:12px;
+}
+
+.status{
+  margin:16px 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.summary-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:var(--shadow);
+}
+
+.summary-label{
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:8px;
+}
+
+.summary-value{
+  font-size:24px;
+  font-weight:800;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:16px;
+}
+
+.stock-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.stock-top{
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.stock-name{
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.stock-code{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.delete-btn{
+  color:#b91c1c;
+  background:#fff1f2;
+  padding:7px 9px;
+  font-size:12px;
+}
+
+.prediction{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.direction{
+  font-size:24px;
+  font-weight:900;
+}
+
+.direction.up{
+  color:var(--green);
+}
+
+.direction.down{
+  color:var(--red);
+}
+
+.direction.neutral{
+  color:var(--yellow);
+}
+
+.probability{
+  text-align:right;
+}
+
+.probability-number{
+  font-size:30px;
+  font-weight:900;
+}
+
+.probability-label{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.score-bar{
+  height:10px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:0 18px 18px;
+}
+
+.score-fill{
+  height:100%;
+  border-radius:999px;
+  transition:width .3s;
+}
+
+.score-fill.up{
+  background:var(--green);
+}
+
+.score-fill.down{
+  background:var(--red);
+}
+
+.score-fill.neutral{
+  background:var(--yellow);
+}
+
+.factors{
+  padding:0 18px 18px;
+}
+
+.factor{
+  margin-bottom:15px;
+}
+
+.factor:last-child{
+  margin-bottom:0;
+}
+
+.factor-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:7px;
+  font-size:13px;
+}
+
+.factor-title{
+  font-weight:700;
+}
+
+.factor-weight{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.factor-control{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.factor-control input[type="range"]{
+  flex:1;
+  accent-color:var(--primary);
+}
+
+.factor-value{
+  width:38px;
+  text-align:right;
+  font-weight:800;
+  font-size:13px;
+}
+
+.factor-desc{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:5px;
+  line-height:1.4;
+}
+
+.news-box{
+  margin:0 18px 18px;
+  padding:13px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+
+.news-box-title{
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.news-box textarea{
+  width:100%;
+  min-height:65px;
+  resize:vertical;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px;
+  background:#fff;
+  color:var(--text);
+  font-size:12px;
+}
+
+.card-bottom{
+  border-top:1px solid var(--line);
+  padding:12px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+
+.updated{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.empty{
+  background:var(--card);
+  border:1px dashed #94a3b8;
+  border-radius:14px;
+  padding:50px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.modal-backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  z-index:100;
+  padding:20px;
+  overflow:auto;
+}
+
+.modal-backdrop.show{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal{
+  width:min(100%,460px);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+
+.modal-head{
+  padding:18px 20px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.modal-head h2{
+  margin:0;
+  font-size:19px;
+}
+
+.modal-body{
+  padding:20px;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.form-group input{
+  width:100%;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  padding:11px;
+  outline:none;
+}
+
+.form-group input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:20px;
+}
+
+.notice{
+  margin-top:16px;
+  padding:14px;
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  border-radius:10px;
+  color:#92400e;
+  font-size:12px;
+  line-height:1.6;
+}
+
+.legend{
+  margin-top:20px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+
+@media(max-width:700px){
+  .summary{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .toolbar{
+    align-items:stretch;
+  }
+
+  .toolbar-left,.toolbar-right{
+    width:100%;
+  }
+
+  .toolbar button{
+    flex:1;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
 
-    <h1>국내 주가 방향성 예측</h1>
-    <div class="subtitle">
-      미국 증시 · 관련 뉴스 · 미국 선물 흐름을 기반으로 다음 거래일 방향성을 기록하고,
-      실제 결과를 입력하여 적중률과 과거 상승 빈도를 확인하는 도구입니다.
+<header class="header">
+  <div class="header-inner">
+    <h1>📈 주가 방향성 분석 대시보드</h1>
+    <p>미증시 40% · 종목 관련 뉴스 30% · 미국 선물 30%</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="toolbar">
+    <div class="toolbar-left">
+      <button class="btn-primary" id="addStockBtn">＋ 종목 등록</button>
+      <button class="btn-secondary" id="resetBtn">초기 예시 복원</button>
     </div>
-
-    <!-- 종목 관리 -->
-    <section class="card">
-      <div class="section-header">
-        <h2>1. 관심 종목 관리</h2>
-      </div>
-
-      <div class="form-row">
-        <input
-          type="text"
-          id="stockNameInput"
-          placeholder="예: 삼성전자"
-          maxlength="40"
-        />
-        <input
-          type="text"
-          id="stockCodeInput"
-          placeholder="종목코드 선택사항: 005930"
-          maxlength="20"
-        />
-        <button class="btn-primary" id="addStockBtn">
-          종목 추가
-        </button>
-      </div>
-
-      <div style="height: 15px;"></div>
-
-      <div id="stockList" class="stock-list"></div>
-    </section>
-
-    <!-- 예측 입력 -->
-    <section class="card">
-      <div class="section-header">
-        <h2>
-          2. 오늘의 예측 입력
-          <span id="selectedStockTitle" class="selected-stock-title"></span>
-        </h2>
-      </div>
-
-      <div id="noStockMessage" class="notice hidden">
-        먼저 관심 종목을 추가하고 종목을 선택해 주세요.
-      </div>
-
-      <div id="predictionInputArea">
-
-        <div class="score-grid">
-
-          <div class="score-box">
-            <label>
-              전일 미국 증시
-              <span class="weight">가중치 40%</span>
-            </label>
-
-            <div class="score-line">
-              <input
-                type="range"
-                id="usScore"
-                min="0"
-                max="100"
-                value="50"
-              />
-              <span id="usScoreValue" class="score-number">50</span>
-            </div>
-
-            <div class="probability-note">
-              다우·S&P500·나스닥 등 전일 미국 증시 흐름을 종합해
-              국내 증시에 긍정적일수록 높은 점수를 입력합니다.
-            </div>
-          </div>
-
-          <div class="score-box">
-            <label>
-              관련 뉴스 분석
-              <span class="weight">가중치 30%</span>
-            </label>
-
-            <div class="score-line">
-              <input
-                type="range"
-                id="newsScore"
-                min="0"
-                max="100"
-                value="50"
-              />
-              <span id="newsScoreValue" class="score-number">50</span>
-            </div>
-
-            <div class="probability-note">
-              해당 종목의 최근 뉴스가 호재일수록 높은 점수,
-              악재일수록 낮은 점수를 입력합니다.
-            </div>
-          </div>
-
-          <div class="score-box">
-            <label>
-              미국 선물지수
-              <span class="weight">가중치 30%</span>
-            </label>
-
-            <div class="score-line">
-              <input
-                type="range"
-                id="futuresScore"
-                min="0"
-                max="100"
-                value="50"
-              />
-              <span id="futuresScoreValue" class="score-number">50</span>
-            </div>
-
-            <div class="probability-note">
-              나스닥·S&P500 선물 등의 상승 흐름이 강할수록
-              높은 점수를 입력합니다.
-            </div>
-          </div>
-
-        </div>
-
-        <!-- 계산 결과 -->
-        <div class="result-panel">
-          <div class="result-main">
-            <div>
-              <div style="font-size: 13px; color: #6b7280; margin-bottom: 7px;">
-                종합 예측 결과
-              </div>
-              <div id="resultDirection" class="result-direction flat">
-                보합 예상
-              </div>
-            </div>
-
-            <div>
-              <div class="result-score">
-                종합점수:
-                <strong id="totalScore">50.0</strong>점
-              </div>
-              <div class="result-score">
-                상승 가능성 점수:
-                <strong id="scorePercent">50.0</strong>%
-              </div>
-            </div>
-          </div>
-
-          <div id="historicalEstimate" class="probability-note">
-            점수 구간별 과거 상승 빈도 데이터가 아직 없습니다.
-          </div>
-
-          <div class="button-row">
-            <button class="btn-primary" id="savePredictionBtn">
-              오늘 예측 기록 저장
-            </button>
-            <button class="btn-secondary" id="resetScoreBtn">
-              점수 초기화
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 통계 -->
-    <section class="card">
-      <div class="section-header">
-        <h2>3. 적중률 통계</h2>
-        <div id="statsTarget" style="font-size: 13px; color: #6b7280;"></div>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-label">전체 예측 건수</div>
-          <div class="stat-value" id="totalPredictionCount">0</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">결과 입력 건수</div>
-          <div class="stat-value" id="resolvedPredictionCount">0</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">적중 건수</div>
-          <div class="stat-value" id="correctPredictionCount">0</div>
-        </div>
-
-        <div class="stat-box">
-          <div class="stat-label">적중률</div>
-          <div class="stat-value" id="accuracyPercent">-</div>
-        </div>
-      </div>
-
-      <div style="height: 20px;"></div>
-
-      <h3>종목별 적중률</h3>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>종목</th>
-              <th>예측 건수</th>
-              <th>결과 입력</th>
-              <th>적중</th>
-              <th>적중률</th>
-            </tr>
-          </thead>
-          <tbody id="stockStatsBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 점수 구간별 상승 확률 -->
-    <section class="card">
-      <div class="section-header">
-        <h2>4. 점수 구간별 과거 상승 빈도</h2>
-      </div>
-
-      <div class="notice">
-        아래 수치는 실제 결과가 입력된 기록만을 대상으로 계산합니다.
-        예를 들어 70~79점 구간에서 20건 중 14건이 상승했다면,
-        해당 구간의 과거 상승 빈도는 70%로 표시됩니다.
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>점수 구간</th>
-              <th>전체 결과 건수</th>
-              <th>상승</th>
-              <th>하락</th>
-              <th>보합</th>
-              <th>과거 상승 빈도</th>
-            </tr>
-          </thead>
-          <tbody id="scoreStatsBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 예측 기록 -->
-    <section class="card">
-      <div class="section-header">
-        <h2>5. 과거 예측 기록</h2>
-
-        <div class="form-row">
-          <select id="historyFilter">
-            <option value="all">전체 종목</option>
-          </select>
-
-          <button class="btn-secondary btn-small" id="exportBtn">
-            데이터 내보내기
-          </button>
-
-          <button class="btn-secondary btn-small" id="importBtn">
-            데이터 불러오기
-          </button>
-
-          <input
-            type="file"
-            id="importFile"
-            accept=".json,application/json"
-            class="hidden"
-          />
-        </div>
-      </div>
-
-      <div class="warning">
-        예측 기록을 저장한 후 실제 거래일이 지나면
-        아래 표의 ‘실제 결과’ 항목에서 상승·하락·보합을 입력해 주세요.
-        결과가 입력되어야 적중률에 반영됩니다.
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>예측일</th>
-              <th>종목</th>
-              <th>미국 증시</th>
-              <th>뉴스</th>
-              <th>미국 선물</th>
-              <th>종합점수</th>
-              <th>예측 방향</th>
-              <th>실제 결과</th>
-              <th>판정</th>
-              <th>삭제</th>
-            </tr>
-          </thead>
-
-          <tbody id="historyBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <div class="footer-note">
-      ※ 본 도구는 투자 판단을 위한 참고용 기록 도구입니다.
-      입력 점수는 사용자가 판단하여 입력하는 값이며,
-      실제 주가 방향이나 수익을 보장하지 않습니다.
+    <div class="toolbar-right">
+      <button class="btn-secondary" id="saveBtn">저장</button>
+      <button class="btn-secondary" id="refreshBtn">분석 갱신</button>
     </div>
+  </section>
 
+  <div class="status" id="statusText"></div>
+
+  <section class="summary">
+    <div class="summary-card">
+      <div class="summary-label">등록 종목</div>
+      <div class="summary-value" id="totalCount">0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">상승 예상</div>
+      <div class="summary-value" id="upCount">0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">하락 예상</div>
+      <div class="summary-value" id="downCount">0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">평균 상승 점수</div>
+      <div class="summary-value" id="avgScore">-</div>
+    </div>
+  </section>
+
+  <section class="cards" id="stockCards"></section>
+
+  <div class="legend">
+    <strong>계산 기준</strong><br>
+    종합점수 = 미증시 점수 × 40% + 뉴스 점수 × 30% + 미선물 점수 × 30%<br>
+    50점 초과: 상승 / 50점 미만: 하락 / 50점: 중립<br>
+    ※ 표시 확률은 현재 가중점수를 0~100%로 표시한 ‘상승 가능성 점수’이며,
+    실제 통계적으로 검증된 확률은 아닙니다.
   </div>
 
-  <script>
-    /*
-      ============================================================
-      국내 주가 방향성 예측 2차 버전
-      - 종목 등록/삭제
-      - 예측 점수 계산
-      - 예측 기록 저장
-      - 실제 결과 입력
-      - 적중률 계산
-      - 점수 구간별 상승 빈도 계산
-      - JSON 백업/복원
-      ============================================================
-    */
+  <div class="notice">
+    <strong>현재 버전 안내</strong><br>
+    이 버전은 실제 금융 데이터 API를 연결하기 전의 계산·관리용 프로토타입입니다.
+    각 점수는 슬라이더로 입력합니다. 실제 투자 판단에 사용하기 전에
+    과거 데이터와 비교하여 예측 정확도 및 확률 보정이 필요합니다.
+  </div>
 
-    const STORAGE_KEYS = {
-      stocks: "stock_direction_stocks_v2",
-      predictions: "stock_direction_predictions_v2"
+</main>
+
+<!-- 종목 등록 모달 -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>종목 등록</h2>
+      <button class="btn-secondary btn-small" id="closeModalBtn">닫기</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="stockName">종목명</label>
+        <input id="stockName" placeholder="예: 삼성전자" maxlength="40">
+      </div>
+
+      <div class="form-group">
+        <label for="stockCode">종목코드</label>
+        <input id="stockCode" placeholder="예: 005930" maxlength="20">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelModalBtn">취소</button>
+        <button class="btn-primary" id="confirmAddBtn">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/*
+  주가 방향성 분석 대시보드
+  ------------------------------------
+  종합점수 =
+    미국 증시 점수 × 0.4
+    + 관련 뉴스 점수 × 0.3
+    + 미국 선물 점수 × 0.3
+
+  현재는 API 연결 전 프로토타입이므로
+  각 점수를 사용자가 직접 조정합니다.
+*/
+
+const STORAGE_KEY = "stock_direction_dashboard_v1";
+
+const DEFAULT_STOCKS = [
+  {
+    id: crypto.randomUUID(),
+    name: "삼성전자",
+    code: "005930",
+    usScore: 75,
+    newsScore: 65,
+    futuresScore: 70,
+    note: "반도체 업황 및 미국 기술주 흐름 확인 필요",
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "SK하이닉스",
+    code: "000660",
+    usScore: 80,
+    newsScore: 72,
+    futuresScore: 68,
+    note: "HBM·메모리 업황 관련 뉴스 확인 필요",
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "현대차",
+    code: "005380",
+    usScore: 55,
+    newsScore: 48,
+    futuresScore: 60,
+    note: "자동차 수요·환율·미국 정책 관련 뉴스 확인 필요",
+    updatedAt: new Date().toISOString()
+  }
+];
+
+let stocks = loadStocks();
+
+const $ = (selector) => document.querySelector(selector);
+
+function makeId(){
+  if(window.crypto && typeof window.crypto.randomUUID === "function"){
+    return window.crypto.randomUUID();
+  }
+  return "stock-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+}
+
+function clamp(value, min, max){
+  return Math.min(max, Math.max(min, value));
+}
+
+function safeNumber(value, fallback=0){
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function calculateScore(stock){
+  const us = clamp(safeNumber(stock.usScore), 0, 100);
+  const news = clamp(safeNumber(stock.newsScore), 0, 100);
+  const futures = clamp(safeNumber(stock.futuresScore), 0, 100);
+
+  return Math.round(
+    us * 0.40 +
+    news * 0.30 +
+    futures * 0.30
+  );
+}
+
+function getDirection(score){
+  if(score > 50){
+    return {
+      text: "▲ 상승",
+      className: "up"
     };
-
-    const DEFAULT_STOCKS = [
-      {
-        id: "samsung-electronics",
-        name: "삼성전자",
-        code: "005930"
-      },
-      {
-        id: "sk-hynix",
-        name: "SK하이닉스",
-        code: "000660"
-      },
-      {
-        id: "hyundai-motor",
-        name: "현대차",
-        code: "005380"
-      }
-    ];
-
-    let stocks = loadStocks();
-    let predictions = loadPredictions();
-    let selectedStockId = stocks.length > 0 ? stocks[0].id : null;
-
-    /*
-      ------------------------------------------------------------
-      공통 함수
-      ------------------------------------------------------------
-    */
-
-    function createId(prefix = "id") {
-      if (window.crypto && crypto.randomUUID) {
-        return prefix + "-" + crypto.randomUUID();
-      }
-
-      return (
-        prefix +
-        "-" +
-        Date.now() +
-        "-" +
-        Math.random().toString(36).slice(2)
-      );
-    }
-
-    function todayString() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
-    }
-
-    function formatDateTime(value) {
-      if (!value) return "-";
-
-      const date = new Date(value);
-
-      if (Number.isNaN(date.getTime())) {
-        return value;
-      }
-
-      return date.toLocaleString("ko-KR");
-    }
-
-    function saveAll() {
-      localStorage.setItem(
-        STORAGE_KEYS.stocks,
-        JSON.stringify(stocks)
-      );
-
-      localStorage.setItem(
-        STORAGE_KEYS.predictions,
-        JSON.stringify(predictions)
-      );
-    }
-
-    function loadStocks() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.stocks);
-
-        if (saved) {
-          const parsed = JSON.parse(saved);
-
-          if (Array.isArray(parsed)) {
-            return parsed;
-          }
-        }
-      } catch (error) {
-        console.error("종목 데이터 불러오기 오류:", error);
-      }
-
-      return [...DEFAULT_STOCKS];
-    }
-
-    function loadPredictions() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEYS.predictions);
-
-        if (saved) {
-          const parsed = JSON.parse(saved);
-
-          if (Array.isArray(parsed)) {
-            return parsed;
-          }
-        }
-      } catch (error) {
-        console.error("예측 데이터 불러오기 오류:", error);
-      }
-
-      return [];
-    }
-
-    function getSelectedStock() {
-      return stocks.find(stock => stock.id === selectedStockId);
-    }
-
-    function getStockName(stockId) {
-      const stock = stocks.find(item => item.id === stockId);
-      return stock ? stock.name : "삭제된 종목";
-    }
-
-    function getStockCode(stockId) {
-      const stock = stocks.find(item => item.id === stockId);
-      return stock && stock.code ? stock.code : "";
-    }
-
-    function calculateTotalScore(us, news, futures) {
-      return (
-        Number(us) * 0.4 +
-        Number(news) * 0.3 +
-        Number(futures) * 0.3
-      );
-    }
-
-    function getDirectionByScore(score) {
-      if (score > 55) {
-        return "상승";
-      }
-
-      if (score < 45) {
-        return "하락";
-      }
-
-      return "보합";
-    }
-
-    function getDirectionClass(direction) {
-      if (direction === "상승") return "up";
-      if (direction === "하락") return "down";
-      return "flat";
-    }
-
-    function getDirectionBadgeClass(direction) {
-      if (direction === "상승") return "badge-up";
-      if (direction === "하락") return "badge-down";
-      return "badge-flat";
-    }
-
-    function getScoreRange(score) {
-      const numericScore = Number(score);
-
-      if (numericScore < 50) return "0~49";
-      if (numericScore < 60) return "50~59";
-      if (numericScore < 70) return "60~69";
-      if (numericScore < 80) return "70~79";
-      if (numericScore < 90) return "80~89";
-      return "90~100";
-    }
-
-    function getScoreRangeList() {
-      return [
-        "0~49",
-        "50~59",
-        "60~69",
-        "70~79",
-        "80~89",
-        "90~100"
-      ];
-    }
-
-    function isResolved(prediction) {
-      return (
-        prediction.actualResult === "상승" ||
-        prediction.actualResult === "하락" ||
-        prediction.actualResult === "보합"
-      );
-    }
-
-    function isCorrect(prediction) {
-      if (!isResolved(prediction)) {
-        return false;
-      }
-
-      return prediction.predictedDirection === prediction.actualResult;
-    }
-
-    /*
-      ------------------------------------------------------------
-      DOM 요소
-      ------------------------------------------------------------
-    */
-
-    const stockNameInput = document.getElementById("stockNameInput");
-    const stockCodeInput = document.getElementById("stockCodeInput");
-    const addStockBtn = document.getElementById("addStockBtn");
-    const stockList = document.getElementById("stockList");
-
-    const selectedStockTitle = document.getElementById("selectedStockTitle");
-    const noStockMessage = document.getElementById("noStockMessage");
-    const predictionInputArea = document.getElementById("predictionInputArea");
-
-    const usScore = document.getElementById("usScore");
-    const newsScore = document.getElementById("newsScore");
-    const futuresScore = document.getElementById("futuresScore");
-
-    const usScoreValue = document.getElementById("usScoreValue");
-    const newsScoreValue = document.getElementById("newsScoreValue");
-    const futuresScoreValue = document.getElementById("futuresScoreValue");
-
-    const totalScore = document.getElementById("totalScore");
-    const scorePercent = document.getElementById("scorePercent");
-    const resultDirection = document.getElementById("resultDirection");
-    const historicalEstimate = document.getElementById("historicalEstimate");
-
-    const savePredictionBtn = document.getElementById("savePredictionBtn");
-    const resetScoreBtn = document.getElementById("resetScoreBtn");
-
-    const totalPredictionCount = document.getElementById("totalPredictionCount");
-    const resolvedPredictionCount = document.getElementById("resolvedPredictionCount");
-    const correctPredictionCount = document.getElementById("correctPredictionCount");
-    const accuracyPercent = document.getElementById("accuracyPercent");
-
-    const statsTarget = document.getElementById("statsTarget");
-    const stockStatsBody = document.getElementById("stockStatsBody");
-    const scoreStatsBody = document.getElementById("scoreStatsBody");
-
-    const historyFilter = document.getElementById("historyFilter");
-    const historyBody = document.getElementById("historyBody");
-
-    const exportBtn = document.getElementById("exportBtn");
-    const importBtn = document.getElementById("importBtn");
-    const importFile = document.getElementById("importFile");
-
-    /*
-      ------------------------------------------------------------
-      종목 렌더링
-      ------------------------------------------------------------
-    */
-
-    function renderStocks() {
-      stockList.innerHTML = "";
-
-      if (stocks.length === 0) {
-        stockList.innerHTML = `
-          <div class="empty">
-            등록된 종목이 없습니다. 종목을 추가해 주세요.
-          </div>
-        `;
-
-        selectedStockId = null;
-        return;
-      }
-
-      stocks.forEach(stock => {
-        const chip = document.createElement("div");
-        chip.className =
-          "stock-chip" +
-          (stock.id === selectedStockId ? " active" : "");
-
-        const selectButton = document.createElement("button");
-        selectButton.type = "button";
-        selectButton.style.background = "transparent";
-        selectButton.style.padding = "0";
-        selectButton.style.color = "inherit";
-        selectButton.style.fontWeight = "inherit";
-
-        selectButton.textContent =
-          stock.name + (stock.code ? ` (${stock.code})` : "");
-
-        selectButton.addEventListener("click", () => {
-          selectedStockId = stock.id;
-          renderStocks();
-          renderSelectedStock();
-          updateAll();
-        });
-
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.title = "종목 삭제";
-        deleteButton.textContent = "×";
-
-        deleteButton.addEventListener("click", event => {
-          event.stopPropagation();
-
-          const relatedCount = predictions.filter(
-            prediction => prediction.stockId === stock.id
-          ).length;
-
-          let message =
-            `"${stock.name}" 종목을 삭제하시겠습니까?`;
-
-          if (relatedCount > 0) {
-            message +=
-              `\n이 종목의 예측 기록 ${relatedCount}건도 함께 삭제됩니다.`;
-          }
-
-          if (!confirm(message)) {
-            return;
-          }
-
-          stocks = stocks.filter(item => item.id !== stock.id);
-
-          predictions = predictions.filter(
-            prediction => prediction.stockId !== stock.id
-          );
-
-          if (selectedStockId === stock.id) {
-            selectedStockId = stocks.length > 0 ? stocks[0].id : null;
-          }
-
-          saveAll();
-          renderStocks();
-          renderSelectedStock();
-          updateAll();
-        });
-
-        chip.appendChild(selectButton);
-        chip.appendChild(deleteButton);
-        stockList.appendChild(chip);
-      });
-    }
-
-    function renderSelectedStock() {
-      const stock = getSelectedStock();
-
-      if (!stock) {
-        selectedStockTitle.textContent = "";
-        noStockMessage.classList.remove("hidden");
-        predictionInputArea.classList.add("hidden");
-        return;
-      }
-
-      noStockMessage.classList.add("hidden");
-      predictionInputArea.classList.remove("hidden");
-
-      selectedStockTitle.textContent =
-        `- ${stock.name}` +
-        (stock.code ? ` (${stock.code})` : "");
-    }
-
-    function addStock() {
-      const name = stockNameInput.value.trim();
-      const code = stockCodeInput.value.trim();
-
-      if (!name) {
-        alert("종목명을 입력해 주세요.");
-        stockNameInput.focus();
-        return;
-      }
-
-      const duplicated = stocks.some(stock => {
-        return (
-          stock.name === name ||
-          (code && stock.code === code)
-        );
-      });
-
-      if (duplicated) {
-        alert("이미 등록된 종목입니다.");
-        return;
-      }
-
-      const newStock = {
-        id: createId("stock"),
-        name,
-        code
-      };
-
-      stocks.push(newStock);
-      selectedStockId = newStock.id;
-
-      stockNameInput.value = "";
-      stockCodeInput.value = "";
-
-      saveAll();
-      renderStocks();
-      renderSelectedStock();
-      updateAll();
-    }
-
-    /*
-      ------------------------------------------------------------
-      점수 계산 및 화면 갱신
-      ------------------------------------------------------------
-    */
-
-    function getCurrentScores() {
-      return {
-        us: Number(usScore.value),
-        news: Number(newsScore.value),
-        futures: Number(futuresScore.value)
-      };
-    }
-
-    function updateScoreLabels() {
-      usScoreValue.textContent = usScore.value;
-      newsScoreValue.textContent = newsScore.value;
-      futuresScoreValue.textContent = futuresScore.value;
-    }
-
-    function updatePredictionResult() {
-      const scores = getCurrentScores();
-
-      const score = calculateTotalScore(
-        scores.us,
-        scores.news,
-        scores.futures
-      );
-
-      const direction = getDirectionByScore(score);
-
-      totalScore.textContent = score.toFixed(1);
-      scorePercent.textContent = score.toFixed(1);
-
-      resultDirection.textContent = `${direction} 예상`;
-      resultDirection.className =
-        "result-direction " + getDirectionClass(direction);
-
-      updateHistoricalEstimate(score);
-    }
-
-    function updateHistoricalEstimate(score) {
-      const selectedStock = getSelectedStock();
-
-      if (!selectedStock) {
-        historicalEstimate.textContent =
-          "종목을 먼저 선택해 주세요.";
-        return;
-      }
-
-      const scoreRange = getScoreRange(score);
-
-      /*
-        선택 종목 기준의 과거 결과를 우선 사용합니다.
-        선택 종목의 데이터가 없으면 전체 종목 데이터를 함께 표시합니다.
-      */
-
-      const stockResolved = predictions.filter(prediction => {
-        return (
-          prediction.stockId === selectedStock.id &&
-          isResolved(prediction) &&
-          getScoreRange(prediction.totalScore) === scoreRange
-        );
-      });
-
-      const allResolved = predictions.filter(prediction => {
-        return (
-          isResolved(prediction) &&
-          getScoreRange(prediction.totalScore) === scoreRange
-        );
-      });
-
-      let targetRecords = stockResolved;
-      let targetLabel = selectedStock.name;
-
-      if (stockResolved.length === 0) {
-        targetRecords = allResolved;
-        targetLabel = "전체 종목";
-      }
-
-      if (targetRecords.length === 0) {
-        historicalEstimate.textContent =
-          `${scoreRange}점 구간의 실제 결과 기록이 아직 없습니다.`;
-        return;
-      }
-
-      const upCount = targetRecords.filter(
-        prediction => prediction.actualResult === "상승"
-      ).length;
-
-      const upRate = (upCount / targetRecords.length) * 100;
-
-      historicalEstimate.innerHTML =
-        `<strong>${targetLabel}</strong>의 ` +
-        `<strong>${scoreRange}점 구간</strong> ` +
-        `과거 상승 빈도: ` +
-        `<strong>${upRate.toFixed(1)}%</strong> ` +
-        `(${targetRecords.length}건 중 상승 ${upCount}건)` +
-        `<br>※ 해당 기록이 적으면 통계적 신뢰도가 낮을 수 있습니다.`;
-    }
-
-    function resetScores() {
-      usScore.value = 50;
-      newsScore.value = 50;
-      futuresScore.value = 50;
-
-      updateAll();
-    }
-
-    /*
-      ------------------------------------------------------------
-      예측 기록 저장
-      ------------------------------------------------------------
-    */
-
-    function savePrediction() {
-      const stock = getSelectedStock();
-
-      if (!stock) {
-        alert("먼저 종목을 선택해 주세요.");
-        return;
-      }
-
-      const scores = getCurrentScores();
-
-      const score = calculateTotalScore(
-        scores.us,
-        scores.news,
-        scores.futures
-      );
-
-      const direction = getDirectionByScore(score);
-
-      const prediction = {
-        id: createId("prediction"),
-        createdAt: new Date().toISOString(),
-        predictionDate: todayString(),
-
-        stockId: stock.id,
-        stockNameSnapshot: stock.name,
-        stockCodeSnapshot: stock.code || "",
-
-        usScore: scores.us,
-        newsScore: scores.news,
-        futuresScore: scores.futures,
-
-        totalScore: Number(score.toFixed(2)),
-        predictedDirection: direction,
-
-        actualResult: "",
-        resolvedAt: ""
-      };
-
-      predictions.unshift(prediction);
-
-      saveAll();
-      updateAll();
-
-      alert(
-        `${stock.name} 예측 기록이 저장되었습니다.\n\n` +
-        `예측 방향: ${direction}\n` +
-        `종합점수: ${score.toFixed(1)}점`
-      );
-    }
-
-    /*
-      ------------------------------------------------------------
-      통계 계산
-      ------------------------------------------------------------
-    */
-
-    function getFilteredPredictions() {
-      const filter = historyFilter.value;
-
-      if (filter === "all") {
-        return predictions;
-      }
-
-      return predictions.filter(
-        prediction => prediction.stockId === filter
-      );
-    }
-
-    function updateOverallStats() {
-      const filter = historyFilter.value;
-      const targetPredictions = getFilteredPredictions();
-
-      const resolved = targetPredictions.filter(isResolved);
-      const correct = resolved.filter(isCorrect);
-
-      totalPredictionCount.textContent = targetPredictions.length;
-      resolvedPredictionCount.textContent = resolved.length;
-      correctPredictionCount.textContent = correct.length;
-
-      if (resolved.length === 0) {
-        accuracyPercent.textContent = "-";
-      } else {
-        accuracyPercent.textContent =
-          ((correct.length / resolved.length) * 100).toFixed(1) + "%";
-      }
-
-      if (filter === "all") {
-        statsTarget.textContent = "전체 종목 기준";
-      } else {
-        statsTarget.textContent =
-          `${getStockName(filter)} 기준`;
+  }
+
+  if(score < 50){
+    return {
+      text: "▼ 하락",
+      className: "down"
+    };
+  }
+
+  return {
+    text: "■ 중립",
+    className: "neutral"
+  };
+}
+
+function formatDate(iso){
+  if(!iso) return "-";
+
+  const date = new Date(iso);
+  if(Number.isNaN(date.getTime())) return "-";
+
+  return date.toLocaleString("ko-KR", {
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+function saveStocks(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks));
+  updateStatus("현재 종목과 점수가 브라우저에 저장되었습니다.");
+}
+
+function loadStocks(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(saved){
+      const parsed = JSON.parse(saved);
+
+      if(Array.isArray(parsed)){
+        return parsed.map(stock => ({
+          id: stock.id || makeId(),
+          name: String(stock.name || "이름 없음"),
+          code: String(stock.code || ""),
+          usScore: clamp(safeNumber(stock.usScore, 50), 0, 100),
+          newsScore: clamp(safeNumber(stock.newsScore, 50), 0, 100),
+          futuresScore: clamp(safeNumber(stock.futuresScore, 50), 0, 100),
+          note: String(stock.note || ""),
+          updatedAt: stock.updatedAt || new Date().toISOString()
+        }));
       }
     }
+  }catch(error){
+    console.warn("저장 데이터 불러오기 실패", error);
+  }
 
-    function updateStockStats() {
-      stockStatsBody.innerHTML = "";
-
-      if (stocks.length === 0) {
-        stockStatsBody.innerHTML = `
-          <tr>
-            <td colspan="5" class="empty">
-              등록된 종목이 없습니다.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      stocks.forEach(stock => {
-        const stockPredictions = predictions.filter(
-          prediction => prediction.stockId === stock.id
-        );
-
-        const resolved = stockPredictions.filter(isResolved);
-        const correct = resolved.filter(isCorrect);
-
-        let accuracy = "-";
-
-        if (resolved.length > 0) {
-          accuracy =
-            ((correct.length / resolved.length) * 100).toFixed(1) + "%";
-        }
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-          <td>
-            <strong>${escapeHtml(stock.name)}</strong>
-            ${
-              stock.code
-                ? `<br><span style="color:#6b7280;font-size:11px;">${escapeHtml(stock.code)}</span>`
-                : ""
-            }
-          </td>
-          <td>${stockPredictions.length}</td>
-          <td>${resolved.length}</td>
-          <td>${correct.length}</td>
-          <td>${accuracy}</td>
-        `;
-
-        stockStatsBody.appendChild(row);
-      });
-    }
-
-    function updateScoreStats() {
-      scoreStatsBody.innerHTML = "";
-
-      const ranges = getScoreRangeList();
-
-      ranges.forEach(range => {
-        const records = predictions.filter(prediction => {
-          return (
-            isResolved(prediction) &&
-            getScoreRange(prediction.totalScore) === range
-          );
-        });
-
-        const upCount = records.filter(
-          prediction => prediction.actualResult === "상승"
-        ).length;
-
-        const downCount = records.filter(
-          prediction => prediction.actualResult === "하락"
-        ).length;
-
-        const flatCount = records.filter(
-          prediction => prediction.actualResult === "보합"
-        ).length;
-
-        let upRate = "-";
-
-        if (records.length > 0) {
-          upRate =
-            ((upCount / records.length) * 100).toFixed(1) + "%";
-        }
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-          <td><strong>${range}점</strong></td>
-          <td>${records.length}</td>
-          <td class="up">${upCount}</td>
-          <td class="down">${downCount}</td>
-          <td>${flatCount}</td>
-          <td><strong>${upRate}</strong></td>
-        `;
-
-        scoreStatsBody.appendChild(row);
-      });
-    }
-
-    /*
-      ------------------------------------------------------------
-      종목 필터
-      ------------------------------------------------------------
-    */
-
-    function updateHistoryFilterOptions() {
-      const currentValue = historyFilter.value;
-
-      historyFilter.innerHTML = `
-        <option value="all">전체 종목</option>
-      `;
-
-      stocks.forEach(stock => {
-        const option = document.createElement("option");
-        option.value = stock.id;
-        option.textContent =
-          stock.name + (stock.code ? ` (${stock.code})` : "");
-
-        historyFilter.appendChild(option);
-      });
-
-      const exists = Array.from(historyFilter.options).some(
-        option => option.value === currentValue
-      );
-
-      historyFilter.value = exists ? currentValue : "all";
-    }
-
-    /*
-      ------------------------------------------------------------
-      예측 기록 테이블
-      ------------------------------------------------------------
-    */
-
-    function renderHistory() {
-      historyBody.innerHTML = "";
-
-      const targetPredictions = getFilteredPredictions();
-
-      if (targetPredictions.length === 0) {
-        historyBody.innerHTML = `
-          <tr>
-            <td colspan="10" class="empty">
-              저장된 예측 기록이 없습니다.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      targetPredictions.forEach(prediction => {
-        const row = document.createElement("tr");
-
-        const predictedClass =
-          getDirectionBadgeClass(prediction.predictedDirection);
-
-        const predictedBadge = `
-          <span class="badge ${predictedClass}">
-            ${prediction.predictedDirection}
-          </span>
-        `;
-
-        let actualControl = "";
-
-        if (isResolved(prediction)) {
-          actualControl = `
-            <select
-              class="actual-result-select"
-              data-id="${prediction.id}"
-            >
-              <option value="">미입력</option>
-              <option value="상승" ${
-                prediction.actualResult === "상승" ? "selected" : ""
-              }>상승</option>
-              <option value="하락" ${
-                prediction.actualResult === "하락" ? "selected" : ""
-              }>하락</option>
-              <option value="보합" ${
-                prediction.actualResult === "보합" ? "selected" : ""
-              }>보합</option>
-            </select>
-          `;
-        } else {
-          actualControl = `
-            <select
-              class="actual-result-select"
-              data-id="${prediction.id}"
-            >
-              <option value="" selected>미입력</option>
-              <option value="상승">상승</option>
-              <option value="하락">하락</option>
-              <option value="보합">보합</option>
-            </select>
-          `;
-        }
-
-        let judgment = `
-          <span class="pending">대기</span>
-        `;
-
-        if (isResolved(prediction)) {
-          if (isCorrect(prediction)) {
-            judgment = `
-              <span class="correct">적중</span>
-            `;
-          } else {
-            judgment = `
-              <span class="incorrect">불일치</span>
-            `;
-          }
-        }
-
-        row.innerHTML = `
-          <td>
-            ${escapeHtml(prediction.predictionDate)}
-            <br>
-            <span style="color:#9ca3af;font-size:11px;">
-              ${escapeHtml(formatDateTime(prediction.createdAt))}
-            </span>
-          </td>
-
-          <td>
-            <strong>${escapeHtml(
-              prediction.stockNameSnapshot || getStockName(prediction.stockId)
-            )}</strong>
-            ${
-              prediction.stockCodeSnapshot
-                ? `<br><span style="color:#6b7280;font-size:11px;">${escapeHtml(prediction.stockCodeSnapshot)}</span>`
-                : ""
-            }
-          </td>
-
-          <td>${prediction.usScore}</td>
-          <td>${prediction.newsScore}</td>
-          <td>${prediction.futuresScore}</td>
-
-          <td>
-            <strong>${Number(prediction.totalScore).toFixed(1)}</strong>
-          </td>
-
-          <td>${predictedBadge}</td>
-
-          <td>${actualControl}</td>
-
-          <td>${judgment}</td>
-
-          <td>
-            <button
-              class="btn-danger btn-small delete-prediction-btn"
-              data-id="${prediction.id}"
-            >
-              삭제
-            </button>
-          </td>
-        `;
-
-        historyBody.appendChild(row);
-      });
-
-      bindHistoryEvents();
-    }
-
-    function bindHistoryEvents() {
-      const resultSelects = document.querySelectorAll(
-        ".actual-result-select"
-      );
-
-      resultSelects.forEach(select => {
-        select.addEventListener("change", () => {
-          const predictionId = select.dataset.id;
-          const actualResult = select.value;
-
-          const prediction = predictions.find(
-            item => item.id === predictionId
-          );
-
-          if (!prediction) {
-            return;
-          }
-
-          prediction.actualResult = actualResult;
-
-          if (actualResult) {
-            prediction.resolvedAt = new Date().toISOString();
-          } else {
-            prediction.resolvedAt = "";
-          }
-
-          saveAll();
-          updateAll();
-        });
-      });
-
-      const deleteButtons = document.querySelectorAll(
-        ".delete-prediction-btn"
-      );
-
-      deleteButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          const predictionId = button.dataset.id;
-
-          if (!confirm("이 예측 기록을 삭제하시겠습니까?")) {
-            return;
-          }
-
-          predictions = predictions.filter(
-            prediction => prediction.id !== predictionId
-          );
-
-          saveAll();
-          updateAll();
-        });
-      });
-    }
-
-    /*
-      ------------------------------------------------------------
-      HTML 이스케이프
-      ------------------------------------------------------------
-    */
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    /*
-      ------------------------------------------------------------
-      데이터 백업 및 복원
-      ------------------------------------------------------------
-    */
-
-    function exportData() {
-      const backup = {
-        version: 2,
-        exportedAt: new Date().toISOString(),
-        stocks,
-        predictions
-      };
-
-      const json = JSON.stringify(backup, null, 2);
-      const blob = new Blob([json], {
-        type: "application/json"
-      });
-
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-
-      anchor.href = url;
-      anchor.download =
-        `주가예측백업_${todayString()}.json`;
-
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-
-      URL.revokeObjectURL(url);
-    }
-
-    function importDataFromFile(file) {
-      const reader = new FileReader();
-
-      reader.onload = event => {
-        try {
-          const imported = JSON.parse(event.target.result);
-
-          if (
-            !imported ||
-            !Array.isArray(imported.stocks) ||
-            !Array.isArray(imported.predictions)
-          ) {
-            throw new Error("백업 파일 형식이 올바르지 않습니다.");
-          }
-
-          if (
-            !confirm(
-              "현재 저장된 종목과 예측 기록을 백업 데이터로 교체하시겠습니까?"
-            )
-          ) {
-            return;
-          }
-
-          stocks = imported.stocks;
-          predictions = imported.predictions;
-
-          selectedStockId =
-            stocks.length > 0 ? stocks[0].id : null;
-
-          saveAll();
-          renderStocks();
-          renderSelectedStock();
-          updateAll();
-
-          alert("데이터를 성공적으로 불러왔습니다.");
-        } catch (error) {
-          console.error(error);
-          alert(
-            "데이터를 불러오지 못했습니다.\n" +
-            error.message
-          );
-        }
-      };
-
-      reader.readAsText(file);
-    }
-
-    /*
-      ------------------------------------------------------------
-      전체 화면 갱신
-      ------------------------------------------------------------
-    */
-
-    function updateAll() {
-      updateScoreLabels();
-      updatePredictionResult();
-      updateHistoryFilterOptions();
-      updateOverallStats();
-      updateStockStats();
-      updateScoreStats();
-      renderHistory();
-    }
-
-    /*
-      ------------------------------------------------------------
-      이벤트 연결
-      ------------------------------------------------------------
-    */
-
-    addStockBtn.addEventListener("click", addStock);
-
-    stockNameInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        addStock();
-      }
-    });
-
-    stockCodeInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        addStock();
-      }
-    });
-
-    usScore.addEventListener("input", updateAll);
-    newsScore.addEventListener("input", updateAll);
-    futuresScore.addEventListener("input", updateAll);
-
-    savePredictionBtn.addEventListener("click", savePrediction);
-    resetScoreBtn.addEventListener("click", resetScores);
-
-    historyFilter.addEventListener("change", () => {
-      updateOverallStats();
-      renderHistory();
-    });
-
-    exportBtn.addEventListener("click", exportData);
-
-    importBtn.addEventListener("click", () => {
-      importFile.click();
-    });
-
-    importFile.addEventListener("change", () => {
-      const file = importFile.files[0];
-
-      if (file) {
-        importDataFromFile(file);
-      }
-
-      importFile.value = "";
-    });
-
-    /*
-      ------------------------------------------------------------
-      초기 실행
-      ------------------------------------------------------------
-    */
-
-    renderStocks();
-    renderSelectedStock();
-    updateAll();
-  </script>
+  return DEFAULT_STOCKS.map(stock => ({
+    ...stock,
+    id: makeId()
+  }));
+}
+
+function updateStatus(message){
+  $("#statusText").textContent =
+    message + " · " +
+    new Date().toLocaleString("ko-KR");
+}
+
+function render(){
+  const cards = $("#stockCards");
+
+  cards.replaceChildren();
+
+  if(stocks.length === 0){
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "등록된 종목이 없습니다. ‘종목 등록’ 버튼을 눌러 추가하세요.";
+    cards.appendChild(empty);
+    updateSummary();
+    return;
+  }
+
+  stocks.forEach(stock => {
+    cards.appendChild(createStockCard(stock));
+  });
+
+  updateSummary();
+}
+
+function createStockCard(stock){
+  const score = calculateScore(stock);
+  const direction = getDirection(score);
+
+  const card = document.createElement("article");
+  card.className = "stock-card";
+  card.dataset.id = stock.id;
+
+  const top = document.createElement("div");
+  top.className = "stock-top";
+
+  const titleBox = document.createElement("div");
+
+  const name = document.createElement("div");
+  name.className = "stock-name";
+  name.textContent = stock.name;
+
+  const code = document.createElement("div");
+  code.className = "stock-code";
+  code.textContent = stock.code ? "종목코드 " + stock.code : "종목코드 미입력";
+
+  titleBox.append(name, code);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.textContent = "삭제";
+  deleteBtn.type = "button";
+  deleteBtn.addEventListener("click", () => deleteStock(stock.id));
+
+  top.append(titleBox, deleteBtn);
+
+  const prediction = document.createElement("div");
+  prediction.className = "prediction";
+
+  const directionBox = document.createElement("div");
+
+  const directionText = document.createElement("div");
+  directionText.className = "direction " + direction.className;
+  directionText.textContent = direction.text;
+
+  const scoreText = document.createElement("div");
+  scoreText.className = "probability-label";
+  scoreText.textContent = "종합점수 " + score + " / 100";
+
+  directionBox.append(directionText, scoreText);
+
+  const probability = document.createElement("div");
+  probability.className = "probability";
+
+  const probabilityNumber = document.createElement("div");
+  probabilityNumber.className = "probability-number";
+  probabilityNumber.textContent = score + "%";
+
+  const probabilityLabel = document.createElement("div");
+  probabilityLabel.className = "probability-label";
+  probabilityLabel.textContent = "상승 가능성 점수";
+
+  probability.append(probabilityNumber, probabilityLabel);
+  prediction.append(directionBox, probability);
+
+  const scoreBar = document.createElement("div");
+  scoreBar.className = "score-bar";
+
+  const scoreFill = document.createElement("div");
+  scoreFill.className = "score-fill " + direction.className;
+  scoreFill.style.width = score + "%";
+
+  scoreBar.appendChild(scoreFill);
+
+  const factors = document.createElement("div");
+  factors.className = "factors";
+
+  factors.append(
+    createFactor(
+      stock,
+      "usScore",
+      "전일 미증시 영향",
+      "40%",
+      "다우·S&P500·나스닥·반도체지수 등을 종합한 점수"
+    ),
+    createFactor(
+      stock,
+      "newsScore",
+      "종목 관련 뉴스",
+      "30%",
+      "최근 뉴스의 긍정·부정 영향 분석 점수"
+    ),
+    createFactor(
+      stock,
+      "futuresScore",
+      "미국 선물지수",
+      "30%",
+      "나스닥·S&P500·다우 선물 흐름 점수"
+    )
+  );
+
+  const newsBox = document.createElement("div");
+  newsBox.className = "news-box";
+
+  const newsTitle = document.createElement("div");
+  newsTitle.className = "news-box-title";
+  newsTitle.textContent = "📝 분석 메모 / 주요 뉴스";
+
+  const textarea = document.createElement("textarea");
+  textarea.placeholder = "관련 뉴스, 실적, 수주, 공시 등의 내용을 입력하세요.";
+  textarea.value = stock.note || "";
+  textarea.maxLength = 1000;
+
+  textarea.addEventListener("input", () => {
+    const target = stocks.find(item => item.id === stock.id);
+    if(!target) return;
+
+    target.note = textarea.value;
+    target.updatedAt = new Date().toISOString();
+    saveStocksSilently();
+  });
+
+  newsBox.append(newsTitle, textarea);
+
+  const bottom = document.createElement("div");
+  bottom.className = "card-bottom";
+
+  const updated = document.createElement("div");
+  updated.className = "updated";
+  updated.textContent = "최근 수정: " + formatDate(stock.updatedAt);
+
+  const detailBtn = document.createElement("button");
+  detailBtn.className = "btn-secondary btn-small";
+  detailBtn.textContent = "분석 요약";
+  detailBtn.type = "button";
+
+  detailBtn.addEventListener("click", () => {
+    showAnalysisSummary(stock);
+  });
+
+  bottom.append(updated, detailBtn);
+
+  card.append(top, prediction, scoreBar, factors, newsBox, bottom);
+
+  return card;
+}
+
+function createFactor(stock, key, title, weight, description){
+  const wrapper = document.createElement("div");
+  wrapper.className = "factor";
+
+  const head = document.createElement("div");
+  head.className = "factor-head";
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "factor-title";
+  titleEl.textContent = title;
+
+  const weightEl = document.createElement("div");
+  weightEl.className = "factor-weight";
+  weightEl.textContent = "반영 비중 " + weight;
+
+  head.append(titleEl, weightEl);
+
+  const control = document.createElement("div");
+  control.className = "factor-control";
+
+  const range = document.createElement("input");
+  range.type = "range";
+  range.min = "0";
+  range.max = "100";
+  range.step = "1";
+  range.value = clamp(safeNumber(stock[key], 50), 0, 100);
+  range.setAttribute("aria-label", title);
+
+  const value = document.createElement("div");
+  value.className = "factor-value";
+  value.textContent = range.value;
+
+  range.addEventListener("input", () => {
+    value.textContent = range.value;
+
+    const target = stocks.find(item => item.id === stock.id);
+    if(!target) return;
+
+    target[key] = Number(range.value);
+    target.updatedAt = new Date().toISOString();
+
+    updateCardOnly(target);
+    saveStocksSilently();
+  });
+
+  control.append(range, value);
+
+  const desc = document.createElement("div");
+  desc.className = "factor-desc";
+  desc.textContent = description;
+
+  wrapper.append(head, control, desc);
+
+  return wrapper;
+}
+
+function updateCardOnly(stock){
+  const oldCard = document.querySelector(
+    '.stock-card[data-id="' + CSS.escape(stock.id) + '"]'
+  );
+
+  if(!oldCard) {
+    render();
+    return;
+  }
+
+  const newCard = createStockCard(stock);
+  oldCard.replaceWith(newCard);
+  updateSummary();
+}
+
+function updateSummary(){
+  const total = stocks.length;
+  const scores = stocks.map(calculateScore);
+  const up = scores.filter(score => score > 50).length;
+  const down = scores.filter(score => score < 50).length;
+  const avg = scores.length
+    ? Math.round(scores.reduce((a,b) => a+b, 0) / scores.length)
+    : null;
+
+  $("#totalCount").textContent = total;
+  $("#upCount").textContent = up;
+  $("#downCount").textContent = down;
+  $("#avgScore").textContent = avg === null ? "-" : avg + "점";
+}
+
+function saveStocksSilently(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks));
+  }catch(error){
+    console.warn("자동 저장 실패", error);
+  }
+}
+
+function deleteStock(id){
+  const target = stocks.find(stock => stock.id === id);
+  if(!target) return;
+
+  const confirmed = confirm(
+    "'" + target.name + "' 종목을 삭제하시겠습니까?"
+  );
+
+  if(!confirmed) return;
+
+  stocks = stocks.filter(stock => stock.id !== id);
+  saveStocks();
+  render();
+  updateStatus("종목이 삭제되었습니다.");
+}
+
+function openModal(){
+  $("#stockName").value = "";
+  $("#stockCode").value = "";
+  $("#modalBackdrop").classList.add("show");
+  $("#stockName").focus();
+}
+
+function closeModal(){
+  $("#modalBackdrop").classList.remove("show");
+}
+
+function addStock(){
+  const name = $("#stockName").value.trim();
+  const code = $("#stockCode").value.trim();
+
+  if(!name){
+    alert("종목명을 입력하세요.");
+    $("#stockName").focus();
+    return;
+  }
+
+  const duplicate = stocks.some(stock =>
+    stock.name === name && stock.code === code
+  );
+
+  if(duplicate){
+    alert("이미 등록된 종목입니다.");
+    return;
+  }
+
+  stocks.push({
+    id: makeId(),
+    name,
+    code,
+    usScore: 50,
+    newsScore: 50,
+    futuresScore: 50,
+    note: "",
+    updatedAt: new Date().toISOString()
+  });
+
+  saveStocks();
+  render();
+  closeModal();
+  updateStatus("종목이 등록되었습니다.");
+}
+
+function showAnalysisSummary(stock){
+  const score = calculateScore(stock);
+  const direction = getDirection(score);
+
+  const message =
+    "[" + stock.name + "] 분석 요약\n\n" +
+    "판단: " + direction.text + "\n" +
+    "상승 가능성 점수: " + score + "%\n\n" +
+    "전일 미증시: " + stock.usScore + "점 × 40%\n" +
+    "관련 뉴스: " + stock.newsScore + "점 × 30%\n" +
+    "미국 선물: " + stock.futuresScore + "점 × 30%\n\n" +
+    "분석 메모:\n" + (stock.note || "입력된 메모 없음") + "\n\n" +
+    "※ 본 결과는 가중점수 기반 참고 지표입니다.";
+
+  alert(message);
+}
+
+function resetToDefaults(){
+  const confirmed = confirm(
+    "현재 등록된 종목과 점수를 초기 예시로 복원하시겠습니까?"
+  );
+
+  if(!confirmed) return;
+
+  stocks = DEFAULT_STOCKS.map(stock => ({
+    ...stock,
+    id: makeId(),
+    updatedAt: new Date().toISOString()
+  }));
+
+  saveStocks();
+  render();
+  updateStatus("초기 예시가 복원되었습니다.");
+}
+
+$("#addStockBtn").addEventListener("click", openModal);
+$("#closeModalBtn").addEventListener("click", closeModal);
+$("#cancelModalBtn").addEventListener("click", closeModal);
+$("#confirmAddBtn").addEventListener("click", addStock);
+
+$("#saveBtn").addEventListener("click", () => {
+  saveStocks();
+});
+
+$("#refreshBtn").addEventListener("click", () => {
+  render();
+  updateStatus("현재 점수 기준으로 분석 결과를 갱신했습니다.");
+});
+
+$("#resetBtn").addEventListener("click", resetToDefaults);
+
+$("#modalBackdrop").addEventListener("click", (event) => {
+  if(event.target === $("#modalBackdrop")){
+    closeModal();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if(event.key === "Escape"){
+    closeModal();
+  }
+
+  if(event.key === "Enter" &&
+     $("#modalBackdrop").classList.contains("show") &&
+     document.activeElement === $("#stockCode")){
+    addStock();
+  }
+});
+
+render();
+updateStatus("대시보드가 준비되었습니다.");
+</script>
+
 </body>
 </html>
+```
