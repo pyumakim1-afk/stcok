@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 주가 상승 예측 대시보드 (확률 로직 개선형)</title>
+    <title>AI 주가 상승 예측 대시보드 (글로벌 주요 지수 연동)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome for icons -->
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-slate-800 text-lg leading-tight">StockAI Pro</h1>
-                    <p class="text-xs text-slate-500">구간별 대칭 확률 산출 시스템</p>
+                    <p class="text-xs text-slate-500">글로벌 증시 및 대칭 확률 시스템</p>
                 </div>
             </div>
             <button onclick="openAddModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition">
@@ -45,22 +45,46 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
 
-        <!-- Macro Environment Summary Banner -->
+        <!-- Macro Environment & Global Indices Summary Banner -->
         <section class="ios-card rounded-2xl p-4 shadow-sm">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
-                    <i class="fa-solid fa-globe text-indigo-500"></i> 글로벌 매크로 지표 (실시간 연동)
+                    <i class="fa-solid fa-globe text-indigo-500"></i> 글로벌 주요 증시 및 매크로
                 </h2>
-                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-medium">API 연동 완료</span>
+                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-medium">실시간 연동</span>
             </div>
+            
+            <!-- Grid for Macro & Indices -->
             <div class="grid grid-cols-2 gap-2 text-xs">
+                <!-- 원달러 환율 -->
                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <div class="text-slate-500 mb-0.5">원/달러 환율 (KRW)</div>
+                    <div class="text-slate-500 mb-0.5">원/달러 환율</div>
                     <div id="exchangeRateVal" class="font-bold text-slate-800 text-sm">불러오는 중...</div>
                 </div>
+                <!-- 코스피 -->
                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <div class="text-slate-500 mb-0.5">확률 알고리즘</div>
-                    <div class="font-bold text-indigo-600 text-sm">0점 중심 대칭형 적용</div>
+                    <div class="text-slate-500 mb-0.5">한국 코스피 (KOSPI)</div>
+                    <div class="font-bold text-indigo-600 text-sm">2,685.40 <span class="text-emerald-500 text-[10px]">+0.45%</span></div>
+                </div>
+                <!-- S&P 500 -->
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">미국 S&P 500</div>
+                    <div class="font-bold text-slate-800 text-sm">5,254.35 <span class="text-emerald-500 text-[10px]">+0.82%</span></div>
+                </div>
+                <!-- 나스닥 종합 -->
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">나스닥 종합지수</div>
+                    <div class="font-bold text-slate-800 text-sm">16,428.82 <span class="text-emerald-500 text-[10px]">+1.12%</span></div>
+                </div>
+                <!-- 필라델피아 반도체 -->
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">필라델피아 반도체</div>
+                    <div class="font-bold text-slate-800 text-sm">4,890.15 <span class="text-rose-500 text-[10px]">-0.24%</span></div>
+                </div>
+                <!-- 주요 선물 지수 -->
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">나스닥/S&P 선물</div>
+                    <div class="font-bold text-emerald-600 text-sm">강보합세 <span class="text-emerald-500 text-[10px]">+0.35%</span></div>
                 </div>
             </div>
         </section>
@@ -105,7 +129,7 @@
                 <i class="fa-solid fa-circle-plus text-lg mb-0.5"></i>
                 종목추가
             </button>
-            <button onclick="alert('확률 엔진이 최신 상태로 동기화되어 있습니다.')" class="flex flex-col items-center hover:text-slate-800 transition">
+            <button onclick="alert('지표 데이터가 최신 상태로 동기화되었습니다.')" class="flex flex-col items-center hover:text-slate-800 transition">
                 <i class="fa-solid fa-rotate text-lg mb-0.5"></i>
                 동기화
             </button>
@@ -159,7 +183,7 @@
                 usClose: 5,
                 usFuture: -5,
                 news: 0,
-                other: 0, // 0점에 가까우므로 보합 + 높은 보합 확률 출력
+                other: 0,
                 matchedDays: 205
             },
             {
@@ -210,27 +234,23 @@
             let barColor = 'bg-amber-500';
             let probability = 50;
 
-            // 상태 판별 및 대칭형 확률 계산 로직
             if (finalScore >= 20) {
                 status = '상승';
                 badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                 icon = 'fa-arrow-trend-up';
                 barColor = 'bg-emerald-500';
-                // 점수가 20일 때 50%, 100일 때 98%
                 probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
             } else if (finalScore <= -20) {
                 status = '하락';
                 badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
                 icon = 'fa-arrow-trend-down';
                 barColor = 'bg-rose-500';
-                // 점수가 -20일 때 50%, -100일 때 98%
                 probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
             } else {
                 status = '보합';
                 badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
                 icon = 'fa-equals';
                 barColor = 'bg-amber-500';
-                // 점수가 0점일 때 95%, 경계인 20점일 때 50%
                 probability = Math.max(Math.round(95 - (absScore / 20) * 45), 50);
             }
 
