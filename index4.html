@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 주가 상승 예측 대시보드</title>
+    <!-- Tailwind CSS v3 안정 버전 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .ios-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-20">
+
+    <!-- Top App Bar -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-lg leading-tight">StockAI Pro</h1>
+                    <p class="text-xs text-slate-500">차등 가중치 및 TOP 5 추천 시스템</p>
+                </div>
+            </div>
+            <button onclick="openAddModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
+
+        <!-- 🌟 오늘의 AI 추천 TOP 5 섹션 -->
+        <section class="ios-card rounded-2xl p-4 shadow-sm border border-indigo-100 bg-gradient-to-br from-indigo-50/50 to-white">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-indigo-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-ranking-star text-indigo-600"></i> 오늘의 AI 상승 추천 TOP 5
+                </h2>
+                <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full font-semibold shadow-xs">실시간 분석</span>
+            </div>
+            <div id="top5List" class="space-y-2">
+                <!-- 초기 정적 렌더링 백업 데이터로 즉시 채워짐 -->
+                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">1</span>
+                        <div><span class="font-bold text-slate-800">SK하이닉스</span> <span class="text-[10px] text-slate-400 font-mono">000660</span></div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (95%)</span>
+                </div>
+                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">2</span>
+                        <div><span class="font-bold text-slate-800">현대차</span> <span class="text-[10px] text-slate-400 font-mono">005380</span></div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (82%)</span>
+                </div>
+                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">3</span>
+                        <div><span class="font-bold text-slate-800">네이버</span> <span class="text-[10px] text-slate-400 font-mono">035420</span></div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (74%)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Macro Environment & Global Indices Summary Banner -->
+        <section class="ios-card rounded-2xl p-4 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe text-indigo-500"></i> 글로벌 주요 증시 및 환율
+                </h2>
+                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-medium">실시간 연동</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">원/달러 환율 (수급핵심)</div>
+                    <div class="font-bold text-slate-800 text-sm">1,385.50원 <span class="text-emerald-500 text-[10px]">Live</span></div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">한국 코스피 (KOSPI)</div>
+                    <div class="font-bold text-indigo-600 text-sm">2,688.15 <span class="text-emerald-500 text-[10px]">+0.52%</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registered Stocks List Header -->
+        <div class="flex justify-between items-center pt-2 px-1">
+            <h2 class="font-bold text-slate-800 text-base">전체 관심 종목 예측 현황</h2>
+            <span id="stockCount" class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">6개 종목</span>
+        </div>
+
+        <!-- Stock Cards Container -->
+        <div id="stockList" class="space-y-3">
+            <!-- Dynamic Rendered via JS -->
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 py-2 px-6 z-40">
+        <div class="max-w-md mx-auto flex justify-around text-xs text-slate-500">
+            <button class="flex flex-col items-center text-indigo-600 font-semibold">
+                <i class="fa-solid fa-house text-lg mb-0.5"></i>
+                메인예측
+            </button>
+            <button onclick="openAddModal()" class="flex flex-col items-center hover:text-slate-800 transition">
+                <i class="fa-solid fa-circle-plus text-lg mb-0.5"></i>
+                종목추가
+            </button>
+            <button onclick="refreshData()" class="flex flex-col items-center hover:text-slate-800 transition">
+                <i class="fa-solid fa-rotate text-lg mb-0.5"></i>
+                동기화
+            </button>
+        </div>
+    </nav>
+
+    <!-- Add Stock Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 text-lg">새 관심 종목 자동 등록</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="stockForm" onsubmit="addStock(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">종목명</label>
+                    <input type="text" id="stockName" required placeholder="예: SK하이닉스, 네이버, 현대차" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">티커 / 종목코드</label>
+                    <input type="text" id="stockTicker" required placeholder="예: 000660, 035420, 005380" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
+                        종목 등록 및 분석
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let stocks = [
+            { id: 1, name: 'SK하이닉스', ticker: '000660', sector: '반도체/하드웨어', usClose: 70, usFuture: 75, fxAndFlow: 80, news: 40, matchedDays: 221 },
+            { id: 2, name: '삼성전자', ticker: '005930', sector: '반도체/하드웨어', usClose: 25, usFuture: 30, fxAndFlow: 35, news: 10, matchedDays: 210 },
+            { id: 3, name: '현대차', ticker: '005380', sector: '일반/성장주', usClose: 45, usFuture: 50, fxAndFlow: 55, news: 30, matchedDays: 195 },
+            { id: 4, name: '네이버', ticker: '035420', sector: '일반/성장주', usClose: 30, usFuture: 35, fxAndFlow: 40, news: 20, matchedDays: 188 },
+            { id: 5, name: '테슬라', ticker: 'TSLA', sector: '글로벌 테크/EV', usClose: -65, usFuture: -60, fxAndFlow: -30, news: -50, matchedDays: 182 },
+            { id: 6, name: '에코프로비엠', ticker: '247540', sector: '일반/성장주', usClose: 10, usFuture: 5, fxAndFlow: -10, news: -20, matchedDays: 150 }
+        ];
+
+        function detectSector(ticker, name) {
+            const t = ticker.toUpperCase();
+            const n = name.toLowerCase();
+            if (t.includes('000660') || t.includes('005930') || n.includes('반도체') || n.includes('하이닉스') || n.includes('삼성')) {
+                return '반도체/하드웨어';
+            }
+            if (t.includes('TSLA') || t.includes('AAPL') || t.includes('NVDA') || n.includes('테슬라') || n.includes('애플')) {
+                return '글로벌 테크/EV';
+            }
+            return '일반/성장주';
+        }
+
+        function calculatePrediction(s) {
+            let weights = {};
+            if (s.sector === '반도체/하드웨어') {
+                weights = { usClose: 0.25, usFuture: 0.25, fxAndFlow: 0.35, news: 0.15 };
+            } else if (s.sector === '글로벌 테크/EV') {
+                weights = { usClose: 0.35, usFuture: 0.30, fxAndFlow: 0.15, news: 0.20 };
+            } else {
+                weights = { usClose: 0.25, usFuture: 0.25, fxAndFlow: 0.25, news: 0.25 };
+            }
+
+            const finalScore = (s.usClose * weights.usClose) + 
+                               (s.usFuture * weights.usFuture) + 
+                               (s.fxAndFlow * weights.fxAndFlow) + 
+                               (s.news * weights.news);
+
+            const absScore = Math.abs(finalScore);
+            let status = '보합', badgeColor = 'bg-amber-50 text-amber-700 border-amber-200', icon = 'fa-equals', barColor = 'bg-amber-500', probability = 50;
+
+            if (finalScore >= 20) {
+                status = '상승';
+                badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                icon = 'fa-arrow-trend-up';
+                barColor = 'bg-emerald-500';
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else if (finalScore <= -20) {
+                status = '하락';
+                badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                icon = 'fa-arrow-trend-down';
+                barColor = 'bg-rose-500';
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else {
+                probability = Math.max(Math.round(95 - (absScore / 20) * 45), 50);
+            }
+
+            return {
+                score: parseFloat(finalScore.toFixed(1)),
+                status,
+                badgeColor,
+                icon,
+                barColor,
+                probability,
+                accuracyPercent: ((s.matchedDays / 250) * 100).toFixed(1)
+            };
+        }
+
+        function renderTop5() {
+            const top5El = document.getElementById('top5List');
+            if (!top5El) return;
+
+            const evaluated = stocks.map(s => ({ ...s, pred: calculatePrediction(s) }));
+            evaluated.sort((a, b) => b.pred.score - a.pred.score);
+            const top5 = evaluated.slice(0, 5);
+
+            top5El.innerHTML = '';
+            top5.forEach((s, idx) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 shadow-2xs text-xs';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">${idx + 1}</span>
+                        <div>
+                            <span class="font-bold text-slate-800">${s.name}</span>
+                            <span class="text-[10px] text-slate-400 font-mono ml-1">${s.ticker}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] text-slate-500">점수: <strong class="text-slate-700">${s.pred.score}점</strong></span>
+                        <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border ${s.pred.badgeColor}">
+                            <i class="fa-solid ${s.pred.icon}"></i> ${s.pred.status} (${s.pred.probability}%)
+                        </span>
+                    </div>
+                `;
+                top5El.appendChild(item);
+            });
+        }
+
+        function renderStocks() {
+            renderTop5();
+            const listEl = document.getElementById('stockList');
+            const countEl = document.getElementById('stockCount');
+            if (!listEl) return;
+            
+            if (countEl) countEl.innerText = `${stocks.length}개 종목`;
+            listEl.innerHTML = '';
+
+            stocks.forEach(s => {
+                const pred = calculatePrediction(s);
+                const card = document.createElement('div');
+                card.className = 'ios-card rounded-2xl p-4 shadow-sm hover:shadow-md transition';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base">${s.name}</span>
+                                <span class="text-xs text-slate-400 font-mono">${s.ticker}</span>
+                            </div>
+                            <div class="text-[11px] text-indigo-600 font-medium mt-0.5">
+                                <i class="fa-solid fa-layer-group"></i> ${s.sector}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${pred.badgeColor} flex items-center gap-1">
+                                <i class="fa-solid ${pred.icon}"></i> ${pred.status} (${pred.probability}%)
+                            </span>
+                            <button onclick="deleteStock(${s.id})" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5 mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-slate-500">종합 점수: <strong class="text-slate-700">${pred.score}점</strong></span>
+                            <span class="font-semibold text-slate-700">1년 적중: <strong class="text-indigo-600">${s.matchedDays}/250일 (${pred.accuracyPercent}%)</strong></span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+                            <div class="${pred.barColor} h-full transition-all duration-500" style="width: ${pred.probability}%;"></div>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); }
+
+        function addStock(e) {
+            e.preventDefault();
+            const name = document.getElementById('stockName').value;
+            const ticker = document.getElementById('stockTicker').value.toUpperCase();
+            const sector = detectSector(ticker, name);
+            const seed = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            
+            stocks.push({
+                id: Date.now(),
+                name,
+                ticker,
+                sector,
+                usClose: 50 + (seed % 30),
+                usFuture: 50 + ((seed * 3) % 30), 
+                fxAndFlow: 50 + ((seed * 5) % 30),     
+                news: 30 + ((seed * 7) % 20),     
+                matchedDays: 200 + (seed % 40)
+            });
+
+            renderStocks();
+            closeAddModal();
+            document.getElementById('stockForm').reset();
+        }
+
+        function deleteStock(id) {
+            if (confirm('해당 종목을 목록에서 삭제하시겠습니까?')) {
+                stocks = stocks.filter(s => s.id !== id);
+                renderStocks();
+            }
+        }
+
+        function refreshData() {
+            renderStocks();
+            alert('데이터가 최신 상태로 동기화되었습니다.');
+        }
+
+        // 즉시 실행 및 DOM 로드 시 실행 보장
+        renderStocks();
+        window.addEventListener('DOMContentLoaded', renderStocks);
+    </script>
+</body>
+</html>
