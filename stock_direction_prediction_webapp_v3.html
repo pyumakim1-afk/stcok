@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#2563eb">
+<title>주가 방향성 예측 웹앱</title>
+<style>
+:root{--blue:#2563eb;--bg:#f3f4f6;--card:#fff;--line:#d1d5db;--text:#111827;--muted:#6b7280;--up:#15803d;--down:#dc2626;--flat:#6b7280}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR","Malgun Gothic",sans-serif}
+header{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;padding:22px 16px}
+header h1{margin:0;font-size:24px} header p{margin:8px 0 0;font-size:13px;opacity:.9}
+main{max-width:1100px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px #0000000b}
+h2{font-size:19px;margin:0 0 14px} h3{font-size:16px;margin:16px 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,button{font:inherit}
+input[type=text],input[type=date],select{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff}
+button{border:0;border-radius:8px;padding:10px 13px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:#fff}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}.green{background:#dcfce7;color:#166534}
+.stock-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.stock{border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:#f9fafb;cursor:pointer}
+.stock.active{border-color:var(--blue);background:#dbeafe;color:#1d4ed8;font-weight:700}
+.stock .x{margin-left:7px;color:#9ca3af;cursor:pointer}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.quote{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fafafa}
+.quote-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.quote-name{font-weight:800}.code{color:var(--muted);font-size:11px}
+.score{font-size:30px;font-weight:800;margin:12px 0 4px}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--flat)}
+.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}
+.badge.up{background:#dcfce7}.badge.down{background:#fee2e2}.badge.flat{background:#e5e7eb}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metric{background:#f9fafb;border:1px solid var(--line);border-radius:10px;padding:12px}
+.metric b{display:block;font-size:22px;margin-top:5px}
+.inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.inputbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fafafa}
+.inputbox label{display:block;font-weight:700;font-size:13px;margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.range-value{font-size:20px;font-weight:800;text-align:right}
+.result{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px;margin-top:14px}
+.result-direction{font-size:27px;font-weight:900}
+table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+th,td{padding:9px 7px;border-bottom:1px solid #e5e7eb;text-align:center;white-space:nowrap}
+th{background:#f9fafb}
+.table-wrap{overflow-x:auto}
+.notice{background:#eff6ff;border-left:4px solid var(--blue);padding:11px 12px;font-size:13px;line-height:1.55;margin-bottom:12px}
+.warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:11px 12px;font-size:13px;line-height:1.55;margin-bottom:12px}
+.hidden{display:none!important}
+footer{max-width:1100px;margin:0 auto;padding:0 14px 25px;color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:760px){.inputs{grid-template-columns:repeat(2,1fr)}.grid4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){header h1{font-size:21px}.inputs{grid-template-columns:1fr}.card{padding:13px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>국내 주가 방향성 예측</h1>
+  <p>미국 증시 30% · 미국 선물 30% · 종목 뉴스·업황 30% · 유가·환율 10%</p>
+</header>
+
+<main>
+<section class="card">
+  <h2>관심 종목 관리</h2>
+  <div class="row">
+    <input id="nameInput" type="text" placeholder="종목명 예: 삼성전자">
+    <input id="codeInput" type="text" placeholder="종목코드 예: 005930">
+    <button class="primary" id="addBtn">종목 추가</button>
+  </div>
+  <div id="stockList" class="stock-list"></div>
+</section>
+
+<section class="card">
+  <h2>메인 대시보드</h2>
+  <div class="notice">
+    아래 결과는 입력된 지표를 가중합한 현재 예측점수입니다. 실제 확률은 과거 예측을 저장하고 실제 결과를 입력한 뒤 계산되는 ‘과거 적중률’과 ‘점수구간별 상승빈도’로 별도 표시됩니다.
+  </div>
+  <div id="dashboard" class="dashboard"></div>
+</section>
+
+<section class="card">
+  <h2>예측 입력 및 저장</h2>
+  <div id="selectedTitle" style="font-weight:800;color:#2563eb;margin-bottom:12px"></div>
+  <div id="noSelected" class="warn hidden">먼저 관심 종목을 추가하고 선택해 주세요.</div>
+  <div id="editor">
+    <div class="inputs">
+      <div class="inputbox">
+        <label>전일 미국 증시 <span class="small">30%</span></label>
+        <input id="us" type="range" min="0" max="100" value="50">
+        <div class="range-value"><span id="usVal">50</span></div>
+      </div>
+      <div class="inputbox">
+        <label>미국 선물지수 <span class="small">30%</span></label>
+        <input id="futures" type="range" min="0" max="100" value="50">
+        <div class="range-value"><span id="futuresVal">50</span></div>
+      </div>
+      <div class="inputbox">
+        <label>종목 뉴스·업황 <span class="small">30%</span></label>
+        <input id="news" type="range" min="0" max="100" value="50">
+        <div class="range-value"><span id="newsVal">50</span></div>
+      </div>
+      <div class="inputbox">
+        <label>유가·환율 등 <span class="small">10%</span></label>
+        <input id="macro" type="range" min="0" max="100" value="50">
+        <div class="range-value"><span id="macroVal">50</span></div>
+      </div>
+    </div>
+    <div class="result">
+      <div>
+        <div class="small">현재 예측 방향</div>
+        <div id="direction" class="result-direction flat">보합</div>
+      </div>
+      <div>
+        <div>예측점수: <strong id="totalScore">50.0</strong>점</div>
+        <div id="historicalHint" class="small">과거 데이터 없음</div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="saveBtn">예측 기록 저장</button>
+      <button class="secondary" id="resetBtn">점수 초기화</button>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>누적 성과 통계</h2>
+  <div class="grid4">
+    <div class="metric"><span class="small">전체 예측</span><b id="allCount">0</b></div>
+    <div class="metric"><span class="small">결과 입력</span><b id="resolvedCount">0</b></div>
+    <div class="metric"><span class="small">적중 건수</span><b id="correctCount">0</b></div>
+    <div class="metric"><span class="small">과거 적중률</span><b id="accuracy">-</b></div>
+  </div>
+  <h3>점수 구간별 실제 상승 빈도</h3>
+  <div class="small" style="margin-bottom:10px">실제 결과가 입력된 기록만 계산합니다. 표본이 적으면 참고용으로만 보세요.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>점수 구간</th><th>결과 건수</th><th>상승</th><th>보합</th><th>하락</th><th>과거 상승 빈도</th></tr></thead>
+      <tbody id="rangeStats"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>예측 기록 및 실제 결과 입력</h2>
+  <div class="row" style="margin-bottom:12px">
+    <select id="filter"><option value="all">전체 종목</option></select>
+    <button class="secondary" id="exportBtn">백업 저장</button>
+    <button class="secondary" id="importBtn">백업 불러오기</button>
+    <input id="fileInput" type="file" accept=".json,application/json" class="hidden">
+  </div>
+  <div class="warn">거래일이 지난 후 각 기록의 ‘실제 결과’를 입력하면 적중률과 점수구간 통계에 반영됩니다.</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>예측일</th><th>종목</th><th>미국</th><th>선물</th><th>뉴스</th><th>기타</th><th>점수</th><th>예측</th><th>실제 결과</th><th>판정</th><th>삭제</th></tr>
+      </thead>
+      <tbody id="history"></tbody>
+    </table>
+  </div>
+</section>
+</main>
+
+<footer>
+  본 웹앱은 투자 참고용 기록·분석 도구입니다. 자동으로 실시간 금융데이터를 수집하는 버전이 아니며, 입력 점수와 과거 기록에 기반한 참고 결과만 제공합니다. 실제 투자 결과나 수익을 보장하지 않습니다.
+</footer>
+
+<script>
+const KEY_STOCKS="stock_predict_stocks_v3";
+const KEY_RECORDS="stock_predict_records_v3";
+
+const defaultStocks=[
+  {id:"samsung",name:"삼성전자",code:"005930"},
+  {id:"skhynix",name:"SK하이닉스",code:"000660"},
+  {id:"hyundai",name:"현대차",code:"005380"}
+];
+
+let stocks=load(KEY_STOCKS,defaultStocks);
+let records=load(KEY_RECORDS,[]);
+let selectedId=stocks[0]?.id||null;
+
+function load(key,fallback){
+  try{
+    const x=JSON.parse(localStorage.getItem(key));
+    return Array.isArray(x)?x:fallback;
+  }catch(e){return fallback}
+}
+function save(){
+  localStorage.setItem(KEY_STOCKS,JSON.stringify(stocks));
+  localStorage.setItem(KEY_RECORDS,JSON.stringify(records));
+}
+function id(prefix){
+  return prefix+"-"+Date.now()+"-"+Math.random().toString(36).slice(2,9);
+}
+function today(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function stockById(x){return stocks.find(s=>s.id===x)}
+function esc(v){
+  return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function score(){
+  return Number(us.value)*.3+Number(futures.value)*.3+Number(news.value)*.3+Number(macro.value)*.1;
+}
+function direction(s){
+  if(s>=60)return "상승";
+  if(s<=40)return "하락";
+  return "보합";
+}
+function dirClass(d){return d==="상승"?"up":d==="하락"?"down":"flat"}
+function range(s){
+  if(s<50)return "0~49";
+  if(s<60)return "50~59";
+  if(s<70)return "60~69";
+  if(s<80)return "70~79";
+  if(s<90)return "80~89";
+  return "90~100";
+}
+function resolved(r){return ["상승","보합","하락"].includes(r.actual)}
+function correct(r){return resolved(r)&&r.predicted===r.actual}
+
+const nameInput=document.getElementById("nameInput");
+const codeInput=document.getElementById("codeInput");
+const stockList=document.getElementById("stockList");
+const dashboard=document.getElementById("dashboard");
+const selectedTitle=document.getElementById("selectedTitle");
+const noSelected=document.getElementById("noSelected");
+const editor=document.getElementById("editor");
+
+const us=document.getElementById("us");
+const futures=document.getElementById("futures");
+const news=document.getElementById("news");
+const macro=document.getElementById("macro");
+const usVal=document.getElementById("usVal");
+const futuresVal=document.getElementById("futuresVal");
+const newsVal=document.getElementById("newsVal");
+const macroVal=document.getElementById("macroVal");
+const totalScore=document.getElementById("totalScore");
+const directionEl=document.getElementById("direction");
+const historicalHint=document.getElementById("historicalHint");
+
+const filter=document.getElementById("filter");
+const history=document.getElementById("history");
+const rangeStats=document.getElementById("rangeStats");
+
+function renderStocks(){
+  stockList.innerHTML="";
+  stocks.forEach(s=>{
+    const el=document.createElement("div");
+    el.className="stock "+(s.id===selectedId?"active":"");
+    el.innerHTML=`<span>${esc(s.name)}${s.code?" ("+esc(s.code)+")":""}</span><span class="x">×</span>`;
+    el.querySelector("span:first-child").onclick=()=>{
+      selectedId=s.id; renderAll();
+    };
+    el.querySelector(".x").onclick=(e)=>{
+      e.stopPropagation();
+      const n=records.filter(r=>r.stockId===s.id).length;
+      if(!confirm(`${s.name}을(를) 삭제할까요?${n?`\n관련 기록 ${n}건도 삭제됩니다.`:""}`))return;
+      stocks=stocks.filter(x=>x.id!==s.id);
+      records=records.filter(x=>x.stockId!==s.id);
+      if(selectedId===s.id)selectedId=stocks[0]?.id||null;
+      save();renderAll();
+    };
+    stockList.appendChild(el);
+  });
+  if(!stocks.length)stockList.innerHTML='<div class="small">등록된 종목이 없습니다.</div>';
+}
+function renderDashboard(){
+  dashboard.innerHTML="";
+  if(!stocks.length){
+    dashboard.innerHTML='<div class="small">종목을 등록해 주세요.</div>';return;
+  }
+  stocks.forEach(s=>{
+    const rs=records.filter(r=>r.stockId===s.id&&resolved(r));
+    const corrects=rs.filter(correct).length;
+    const acc=rs.length?(corrects/rs.length*100).toFixed(1)+"%":"-";
+    const latest=records.find(r=>r.stockId===s.id);
+    let content;
+    if(latest){
+      const dc=dirClass(latest.predicted);
+      content=`<div class="score">${Number(latest.total).toFixed(1)}<span style="font-size:14px">점</span></div>
+      <span class="badge ${dc}">${latest.predicted}</span>
+      <div class="small" style="margin-top:9px">최근 예측일: ${esc(latest.date)}<br>과거 적중률: <b>${acc}</b> (${rs.length}건)</div>`;
+    }else{
+      content=`<div class="score">-</div><div class="small">아직 예측 기록이 없습니다.</div>`;
+    }
+    const el=document.createElement("div");
+    el.className="quote";
+    el.innerHTML=`<div class="quote-head"><div><div class="quote-name">${esc(s.name)}</div><div class="code">${esc(s.code||"")}</div></div><button class="secondary" style="padding:6px 8px;font-size:12px">입력</button></div>${content}`;
+    el.querySelector("button").onclick=()=>{selectedId=s.id;renderAll();document.querySelector("#editor").scrollIntoView({behavior:"smooth"})};
+    dashboard.appendChild(el);
+  });
+}
+function updateEditor(){
+  const s=stockById(selectedId);
+  if(!s){
+    noSelected.classList.remove("hidden");editor.classList.add("hidden");selectedTitle.textContent="";return;
+  }
+  noSelected.classList.add("hidden");editor.classList.remove("hidden");
+  selectedTitle.textContent=`선택 종목: ${s.name}${s.code?" ("+s.code+")":""}`;
+  usVal.textContent=us.value;futuresVal.textContent=futures.value;newsVal.textContent=news.value;macroVal.textContent=macro.value;
+  const sct=score(), d=direction(sct);
+  totalScore.textContent=sct.toFixed(1);
+  directionEl.textContent=d;
+  directionEl.className="result-direction "+dirClass(d);
+  const rg=range(sct);
+  const same=records.filter(r=>r.stockId===selectedId&&resolved(r)&&range(r.total)===rg);
+  const all=records.filter(r=>resolved(r)&&range(r.total)===rg);
+  const target=same.length?same:all;
+  const label=same.length?s.name:"전체 종목";
+  if(!target.length)historicalHint.textContent=`${rg}점 구간 과거 상승 빈도 데이터 없음`;
+  else{
+    const ups=target.filter(r=>r.actual==="상승").length;
+    historicalHint.innerHTML=`${label} ${rg}점 구간 과거 상승 빈도: <b>${(ups/target.length*100).toFixed(1)}%</b> (${target.length}건 기준)`;
+  }
+}
+function renderStats(){
+  const selectedFilter=filter.value;
+  const rs=selectedFilter==="all"?records:records.filter(r=>r.stockId===selectedFilter);
+  const resolvedRs=rs.filter(resolved), correctRs=resolvedRs.filter(correct);
+  document.getElementById("allCount").textContent=rs.length;
+  document.getElementById("resolvedCount").textContent=resolvedRs.length;
+  document.getElementById("correctCount").textContent=correctRs.length;
+  document.getElementById("accuracy").textContent=resolvedRs.length?(correctRs.length/resolvedRs.length*100).toFixed(1)+"%":"-";
+
+  rangeStats.innerHTML="";
+  ["0~49","50~59","60~69","70~79","80~89","90~100"].forEach(rg=>{
+    const x=records.filter(r=>resolved(r)&&range(r.total)===rg);
+    const up=x.filter(r=>r.actual==="상승").length;
+    const flat=x.filter(r=>r.actual==="보합").length;
+    const down=x.filter(r=>r.actual==="하락").length;
+    const rate=x.length?(up/x.length*100).toFixed(1)+"%":"-";
+    rangeStats.innerHTML+=`<tr><td><b>${rg}점</b></td><td>${x.length}</td><td class="up">${up}</td><td>${flat}</td><td class="down">${down}</td><td><b>${rate}</b></td></tr>`;
+  });
+}
+function renderFilter(){
+  const old=filter.value;
+  filter.innerHTML='<option value="all">전체 종목</option>';
+  stocks.forEach(s=>filter.innerHTML+=`<option value="${s.id}">${esc(s.name)}${s.code?" ("+esc(s.code)+")":""}</option>`);
+  filter.value=[...filter.options].some(o=>o.value===old)?old:"all";
+}
+function renderHistory(){
+  const rs=filter.value==="all"?records:records.filter(r=>r.stockId===filter.value);
+  history.innerHTML="";
+  if(!rs.length){
+    history.innerHTML='<tr><td colspan="11" class="small">예측 기록이 없습니다.</td></tr>';return;
+  }
+  rs.forEach(r=>{
+    const dclass=dirClass(r.predicted);
+    const actual=r.actual||"";
+    const judgment=!resolved(r)?'<span class="small">대기</span>':correct(r)?'<b class="up">적중</b>':'<b class="down">불일치</b>';
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${esc(r.date)}</td>
+      <td>${esc(r.stockName)}</td>
+      <td>${r.us}</td><td>${r.futures}</td><td>${r.news}</td><td>${r.macro}</td>
+      <td><b>${Number(r.total).toFixed(1)}</b></td>
+      <td><span class="badge ${dclass}">${r.predicted}</span></td>
+      <td><select class="actualSelect" data-id="${r.id}">
+        <option value="">미입력</option>
+        <option value="상승" ${actual==="상승"?"selected":""}>상승</option>
+        <option value="보합" ${actual==="보합"?"selected":""}>보합</option>
+        <option value="하락" ${actual==="하락"?"selected":""}>하락</option>
+      </select></td>
+      <td>${judgment}</td>
+      <td><button class="danger deleteRecord" data-id="${r.id}" style="padding:6px 8px;font-size:12px">삭제</button></td>`;
+    history.appendChild(tr);
+  });
+  document.querySelectorAll(".actualSelect").forEach(el=>{
+    el.onchange=()=>{
+      const r=records.find(x=>x.id===el.dataset.id);
+      if(!r)return;
+      r.actual=el.value;
+      r.resolvedAt=el.value?new Date().toISOString():"";
+      save();renderAll();
+    };
+  });
+  document.querySelectorAll(".deleteRecord").forEach(el=>{
+    el.onclick=()=>{
+      if(!confirm("이 기록을 삭제할까요?"))return;
+      records=records.filter(x=>x.id!==el.dataset.id);
+      save();renderAll();
+    };
+  });
+}
+function renderAll(){
+  renderStocks();renderDashboard();renderFilter();updateEditor();renderStats();renderHistory();
+}
+document.getElementById("addBtn").onclick=()=>{
+  const name=nameInput.value.trim(),code=codeInput.value.trim();
+  if(!name){alert("종목명을 입력해 주세요.");return}
+  if(stocks.some(s=>s.name===name||(code&&s.code===code))){alert("이미 등록된 종목입니다.");return}
+  const s={id:id("stock"),name,code};
+  stocks.push(s);selectedId=s.id;nameInput.value="";codeInput.value="";
+  save();renderAll();
+};
+[nameInput,codeInput].forEach(x=>x.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("addBtn").click()}));
+[us,futures,news,macro].forEach(x=>x.addEventListener("input",updateEditor));
+document.getElementById("resetBtn").onclick=()=>{us.value=50;futures.value=50;news.value=50;macro.value=50;updateEditor()};
+document.getElementById("saveBtn").onclick=()=>{
+  const s=stockById(selectedId);if(!s){alert("종목을 선택해 주세요.");return}
+  const t=score(),d=direction(t);
+  records.unshift({id:id("record"),date:today(),createdAt:new Date().toISOString(),stockId:s.id,stockName:s.name,stockCode:s.code||"",us:+us.value,futures:+futures.value,news:+news.value,macro:+macro.value,total:+t.toFixed(2),predicted:d,actual:"",resolvedAt:""});
+  save();renderAll();alert(`${s.name} 예측 기록이 저장되었습니다.\n예측: ${d}\n점수: ${t.toFixed(1)}점`);
+};
+filter.onchange=()=>{renderStats();renderHistory()};
+document.getElementById("exportBtn").onclick=()=>{
+  const data={version:3,exportedAt:new Date().toISOString(),stocks,records};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`주가예측백업_${today()}.json`;a.click();URL.revokeObjectURL(a.href);
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("fileInput").click();
+document.getElementById("fileInput").onchange=e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const x=JSON.parse(ev.target.result);
+      if(!Array.isArray(x.stocks)||!Array.isArray(x.records))throw Error("형식 오류");
+      if(!confirm("현재 데이터를 백업 파일로 교체할까요?"))return;
+      stocks=x.stocks;records=x.records;selectedId=stocks[0]?.id||null;save();renderAll();alert("복원되었습니다.");
+    }catch(err){alert("백업 파일을 읽을 수 없습니다.")}
+  };
+  reader.readAsText(file);e.target.value="";
+};
+renderAll();
+</script>
+</body>
+</html>
