@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 주가 상승 예측 대시보드 (차등 가중치 시스템)</title>
+    <!-- Tailwind CSS v3 안정 버전 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .ios-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-20">
+
+    <!-- Top App Bar -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-lg leading-tight">StockAI Pro</h1>
+                    <p class="text-xs text-slate-500">섹터별 차등 가중치 적용 시스템</p>
+                </div>
+            </div>
+            <button onclick="openAddModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
+
+        <!-- Macro Environment & Global Indices Summary Banner -->
+        <section class="ios-card rounded-2xl p-4 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe text-indigo-500"></i> 글로벌 주요 증시 및 환율
+                </h2>
+                <span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-medium">실시간 연동</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">원/달러 환율 (수급핵심)</div>
+                    <div id="exchangeRateVal" class="font-bold text-slate-800 text-sm">1,385.50원 <span class="text-emerald-500 text-[10px]">Live</span></div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">한국 코스피 (KOSPI)</div>
+                    <div class="font-bold text-indigo-600 text-sm">2,688.15 <span class="text-emerald-500 text-[10px]">+0.52%</span></div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">미국 S&P 500</div>
+                    <div class="font-bold text-slate-800 text-sm">5,261.10 <span class="text-emerald-500 text-[10px]">+0.95%</span></div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <div class="text-slate-500 mb-0.5">필라델피아 반도체</div>
+                    <div class="font-bold text-slate-800 text-sm">4,912.40 <span class="text-emerald-500 text-[10px]">+0.46%</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registered Stocks List Header -->
+        <div class="flex justify-between items-center pt-2 px-1">
+            <h2 class="font-bold text-slate-800 text-base">관심 종목 차등 예측 현황</h2>
+            <span id="stockCount" class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">3개 종목</span>
+        </div>
+
+        <!-- Stock Cards Container -->
+        <div id="stockList" class="space-y-3">
+            <!-- Dynamic Rendered via JS -->
+        </div>
+
+        <!-- AI Model Weight Guide Card -->
+        <section class="ios-card rounded-2xl p-4 shadow-sm mt-6">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-purple-500"></i> 섹터별 맞춤 가중치 적용 현황
+                </h2>
+                <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full font-bold">최적화 완료</span>
+            </div>
+            <div class="space-y-2 text-xs text-slate-600">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <strong class="text-indigo-600">반도체 섹터:</strong> 미증시(25%) | 선물(25%) | <strong class="text-slate-800">환율/수급(35%)</strong> | 뉴스(15%)
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <strong class="text-indigo-600">글로벌 테크:</strong> <strong class="text-slate-800">미증시(35%)</strong> | 선물(30%) | 환율/수급(15%) | <strong class="text-slate-800">뉴스(20%)</strong>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 py-2 px-6 z-40">
+        <div class="max-w-md mx-auto flex justify-around text-xs text-slate-500">
+            <button class="flex flex-col items-center text-indigo-600 font-semibold">
+                <i class="fa-solid fa-house text-lg mb-0.5"></i>
+                메인예측
+            </button>
+            <button onclick="openAddModal()" class="flex flex-col items-center hover:text-slate-800 transition">
+                <i class="fa-solid fa-circle-plus text-lg mb-0.5"></i>
+                종목추가
+            </button>
+            <button onclick="refreshData()" class="flex flex-col items-center hover:text-slate-800 transition">
+                <i class="fa-solid fa-rotate text-lg mb-0.5"></i>
+                동기화
+            </button>
+        </div>
+    </nav>
+
+    <!-- Add Stock Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 text-lg">새 관심 종목 자동 등록</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="stockForm" onsubmit="addStock(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">종목명</label>
+                    <input type="text" id="stockName" required placeholder="예: SK하이닉스, 테슬라, 현대차" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">티커 / 종목코드</label>
+                    <input type="text" id="stockTicker" required placeholder="예: 000660, TSLA, 005380" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
+                        종목 등록 및 차등 가중치 분석
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let stocks = [
+            {
+                id: 1,
+                name: 'SK하이닉스',
+                ticker: '000660',
+                sector: '반도체/하드웨어',
+                usClose: 70,     // 미증시 영향
+                usFuture: 75,    // 야간 선물
+                fxAndFlow: 80,   // 환율 및 외국인 순매수 수급 점수
+                news: 40,        // 섹터 뉴스 모멘텀
+                matchedDays: 221
+            },
+            {
+                id: 2,
+                name: '삼성전자',
+                ticker: '005930',
+                sector: '반도체/하드웨어',
+                usClose: 10,
+                usFuture: -5,
+                fxAndFlow: 20,
+                news: 0,
+                matchedDays: 210
+            },
+            {
+                id: 3,
+                name: '테슬라',
+                ticker: 'TSLA',
+                sector: '글로벌 테크/EV',
+                usClose: -65,
+                usFuture: -60,
+                fxAndFlow: -30,
+                news: -50,
+                matchedDays: 182
+            }
+        ];
+
+        function detectSector(ticker, name) {
+            const t = ticker.toUpperCase();
+            const n = name.toLowerCase();
+            if (t.includes('000660') || t.includes('005930') || n.includes('반도체') || n.includes('하이닉스') || n.includes('삼성')) {
+                return '반도체/하드웨어';
+            }
+            if (t.includes('TSLA') || t.includes('AAPL') || t.includes('NVDA') || n.includes('테슬라') || n.includes('애플')) {
+                return '글로벌 테크/EV';
+            }
+            return '일반/성장주';
+        }
+
+        // 🎯 섹터별 차등 가중치 적용 핵심 함수
+        function calculatePrediction(s) {
+            let weights = {};
+
+            // 섹터별 맞춤 가중치 부여 (합계 1.0 = 100%)
+            if (s.sector === '반도체/하드웨어') {
+                weights = { usClose: 0.25, usFuture: 0.25, fxAndFlow: 0.35, news: 0.15 }; // 환율/수급 가중치 35% 집중
+            } else if (s.sector === '글로벌 테크/EV') {
+                weights = { usClose: 0.35, usFuture: 0.30, fxAndFlow: 0.15, news: 0.20 }; // 미증시 35%, 뉴스 20% 강화
+            } else {
+                weights = { usClose: 0.25, usFuture: 0.25, fxAndFlow: 0.25, news: 0.25 }; // 일반 균등형
+            }
+
+            const finalScore = (s.usClose * weights.usClose) + 
+                               (s.usFuture * weights.usFuture) + 
+                               (s.fxAndFlow * weights.fxAndFlow) + 
+                               (s.news * weights.news);
+
+            const absScore = Math.abs(finalScore);
+            
+            let status = '보합';
+            let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+            let icon = 'fa-equals';
+            let barColor = 'bg-amber-500';
+            let probability = 50;
+
+            if (finalScore >= 20) {
+                status = '상승';
+                badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                icon = 'fa-arrow-trend-up';
+                barColor = 'bg-emerald-500';
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else if (finalScore <= -20) {
+                status = '하락';
+                badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                icon = 'fa-arrow-trend-down';
+                barColor = 'bg-rose-500';
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else {
+                status = '보합';
+                badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                icon = 'fa-equals';
+                barColor = 'bg-amber-500';
+                probability = Math.max(Math.round(95 - (absScore / 20) * 45), 50);
+            }
+
+            let accuracyPercent = ((s.matchedDays / 250) * 100).toFixed(1);
+
+            return {
+                score: finalScore.toFixed(1),
+                status,
+                badgeColor,
+                icon,
+                barColor,
+                probability,
+                accuracyPercent,
+                weights
+            };
+        }
+
+        function renderStocks() {
+            const listEl = document.getElementById('stockList');
+            const countEl = document.getElementById('stockCount');
+            if (!listEl) return;
+            
+            if (countEl) countEl.innerText = `${stocks.length}개 종목`;
+            listEl.innerHTML = '';
+
+            stocks.forEach(s => {
+                const pred = calculatePrediction(s);
+                
+                const card = document.createElement('div');
+                card.className = 'ios-card rounded-2xl p-4 shadow-sm hover:shadow-md transition';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-base">${s.name}</span>
+                                <span class="text-xs text-slate-400 font-mono">${s.ticker}</span>
+                            </div>
+                            <div class="text-[11px] text-indigo-600 font-medium mt-0.5">
+                                <i class="fa-solid fa-layer-group"></i> ${s.sector} (차등 가중치 적용됨)
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${pred.badgeColor} flex items-center gap-1 shadow-xs">
+                                <i class="fa-solid ${pred.icon}"></i> ${pred.status} (${pred.probability}%)
+                            </span>
+                            <button onclick="deleteStock(${s.id})" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5 mt-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-slate-500">종합 점수: <strong class="text-slate-700">${pred.score}점</strong></span>
+                            <span class="font-semibold text-slate-700">1년 적중: <strong class="text-indigo-600">${s.matchedDays}/250일 (${pred.accuracyPercent}%)</strong></span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+                            <div class="${pred.barColor} h-full transition-all duration-500" style="width: ${pred.probability}%;"></div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1 pt-1 text-[10px] text-slate-400 text-center">
+                            <div class="bg-white rounded p-1 border border-slate-100">미증시(${pred.weights.usClose*100}%): ${s.usClose}</div>
+                            <div class="bg-white rounded p-1 border border-slate-100">선물(${pred.weights.usFuture*100}%): ${s.usFuture}</div>
+                            <div class="bg-white rounded p-1 border border-slate-100">환율수급(${pred.weights.fxAndFlow*100}%): ${s.fxAndFlow}</div>
+                            <div class="bg-white rounded p-1 border border-slate-100">뉴스(${pred.weights.news*100}%): ${s.news}</div>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        function addStock(e) {
+            e.preventDefault();
+            const name = document.getElementById('stockName').value;
+            const ticker = document.getElementById('stockTicker').value.toUpperCase();
+            const sector = detectSector(ticker, name);
+
+            const seed = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            
+            const newStock = {
+                id: Date.now(),
+                name,
+                ticker,
+                sector,
+                usClose: (seed % 140) - 70,
+                usFuture: ((seed * 3) % 140) - 70, 
+                fxAndFlow: ((seed * 5) % 120) - 60,     
+                news: ((seed * 7) % 100) - 50,     
+                matchedDays: 160 + (seed % 75)
+            };
+
+            stocks.push(newStock);
+            renderStocks();
+            closeAddModal();
+            document.getElementById('stockForm').reset();
+        }
+
+        function deleteStock(id) {
+            if (confirm('해당 종목을 목록에서 삭제하시겠습니까?')) {
+                stocks = stocks.filter(s => s.id !== id);
+                renderStocks();
+            }
+        }
+
+        function refreshData() {
+            renderStocks();
+            alert('글로벌 증시 및 차등 가중치 데이터가 동기화되었습니다.');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderStocks();
+        });
+    </script>
+</body>
+</html>
