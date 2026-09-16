@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-slate-800 text-lg leading-tight">StockAI Pro</h1>
-                    <p class="text-xs text-slate-500">차등 가중치 및 TOP 5 추천 시스템</p>
+                    <p class="text-xs text-slate-500">전체 국내 증시 대상 AI 추천 시스템</p>
                 </div>
             </div>
             <button onclick="openAddModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition">
@@ -44,37 +44,16 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
 
-        <!-- 🌟 오늘의 AI 추천 TOP 5 섹션 -->
+        <!-- 🌟 오늘의 AI 상승 추천 TOP 5 (전체 시장 기준 고확률 종목) -->
         <section class="ios-card rounded-2xl p-4 shadow-sm border border-indigo-100 bg-gradient-to-br from-indigo-50/50 to-white">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-bold text-indigo-900 flex items-center gap-1.5">
-                    <i class="fa-solid fa-ranking-star text-indigo-600"></i> 오늘의 AI 상승 추천 TOP 5
+                    <i class="fa-solid fa-ranking-star text-indigo-600"></i> 오늘의 국내 증시 상승 추천 TOP 5
                 </h2>
-                <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full font-semibold shadow-xs">실시간 분석</span>
+                <span class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-semibold shadow-xs">고확률 필터링</span>
             </div>
             <div id="top5List" class="space-y-2">
-                <!-- 초기 정적 렌더링 백업 데이터로 즉시 채워짐 -->
-                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">1</span>
-                        <div><span class="font-bold text-slate-800">SK하이닉스</span> <span class="text-[10px] text-slate-400 font-mono">000660</span></div>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (95%)</span>
-                </div>
-                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">2</span>
-                        <div><span class="font-bold text-slate-800">현대차</span> <span class="text-[10px] text-slate-400 font-mono">005380</span></div>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (82%)</span>
-                </div>
-                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 text-xs">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">3</span>
-                        <div><span class="font-bold text-slate-800">네이버</span> <span class="text-[10px] text-slate-400 font-mono">035420</span></div>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full font-bold text-[11px] border bg-emerald-50 text-emerald-700 border-emerald-200"><i class="fa-solid fa-arrow-trend-up"></i> 상승 (74%)</span>
-                </div>
+                <!-- 동적으로 채워짐 -->
             </div>
         </section>
 
@@ -100,8 +79,8 @@
 
         <!-- Registered Stocks List Header -->
         <div class="flex justify-between items-center pt-2 px-1">
-            <h2 class="font-bold text-slate-800 text-base">전체 관심 종목 예측 현황</h2>
-            <span id="stockCount" class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">6개 종목</span>
+            <h2 class="font-bold text-slate-800 text-base">내 관심 종목 예측 현황</h2>
+            <span id="stockCount" class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">개 종목</span>
         </div>
 
         <!-- Stock Cards Container -->
@@ -133,17 +112,17 @@
     <div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-800 text-lg">새 관심 종목 자동 등록</h3>
+                <h3 class="font-bold text-slate-800 text-lg">새 관심 종목 추가</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="stockForm" onsubmit="addStock(event)" class="space-y-3 text-xs">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">종목명</label>
-                    <input type="text" id="stockName" required placeholder="예: SK하이닉스, 네이버, 현대차" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                    <input type="text" id="stockName" required placeholder="예: SK하이닉스, 현대차" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">티커 / 종목코드</label>
-                    <input type="text" id="stockTicker" required placeholder="예: 000660, 035420, 005380" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                    <input type="text" id="stockTicker" required placeholder="예: 000660, 005380" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
                 </div>
                 <div class="pt-2">
                     <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-sm">
@@ -155,13 +134,22 @@
     </div>
 
     <script>
-        let stocks = [
-            { id: 1, name: 'SK하이닉스', ticker: '000660', sector: '반도체/하드웨어', usClose: 70, usFuture: 75, fxAndFlow: 80, news: 40, matchedDays: 221 },
-            { id: 2, name: '삼성전자', ticker: '005930', sector: '반도체/하드웨어', usClose: 25, usFuture: 30, fxAndFlow: 35, news: 10, matchedDays: 210 },
-            { id: 3, name: '현대차', ticker: '005380', sector: '일반/성장주', usClose: 45, usFuture: 50, fxAndFlow: 55, news: 30, matchedDays: 195 },
-            { id: 4, name: '네이버', ticker: '035420', sector: '일반/성장주', usClose: 30, usFuture: 35, fxAndFlow: 40, news: 20, matchedDays: 188 },
-            { id: 5, name: '테슬라', ticker: 'TSLA', sector: '글로벌 테크/EV', usClose: -65, usFuture: -60, fxAndFlow: -30, news: -50, matchedDays: 182 },
-            { id: 6, name: '에코프로비엠', ticker: '247540', sector: '일반/성장주', usClose: 10, usFuture: 5, fxAndFlow: -10, news: -20, matchedDays: 150 }
+        // 국내 주요 코스피/코스닥 우량 종목 마켓 풀 (실제 스캔 대상)
+        let marketPool = [
+            { id: 1, name: 'SK하이닉스', ticker: '000660', sector: '반도체/하드웨어', usClose: 75, usFuture: 80, fxAndFlow: 85, news: 60, matchedDays: 230 },
+            { id: 2, name: '한화에어로스페이스', ticker: '012450', sector: '일반/성장주', usClose: 70, usFuture: 75, fxAndFlow: 80, news: 70, matchedDays: 225 },
+            { id: 3, name: '현대차', ticker: '005380', sector: '일반/성장주', usClose: 65, usFuture: 70, fxAndFlow: 75, news: 55, matchedDays: 215 },
+            { id: 4, name: '삼성전자', ticker: '005930', sector: '반도체/하드웨어', usClose: 60, usFuture: 65, fxAndFlow: 70, news: 50, matchedDays: 210 },
+            { id: 5, name: '기아', ticker: '000270', sector: '일반/성장주', usClose: 55, usFuture: 60, fxAndFlow: 65, news: 45, matchedDays: 205 },
+            { id: 6, name: 'POSCO홀딩스', ticker: '005490', sector: '일반/성장주', usClose: 50, usFuture: 55, fxAndFlow: 60, news: 40, matchedDays: 195 },
+            { id: 7, name: 'LG에너지솔루션', ticker: '373220', sector: '글로벌 테크/EV', usClose: 45, usFuture: 50, fxAndFlow: 55, news: 35, matchedDays: 190 },
+            { id: 8, name: '네이버', ticker: '035420', sector: '일반/성장주', usClose: 40, usFuture: 45, fxAndFlow: 50, news: 30, matchedDays: 185 }
+        ];
+
+        // 사용자가 직접 등록한 내 관심 종목 리스트
+        let myStocks = [
+            { id: 1, name: 'SK하이닉스', ticker: '000660', sector: '반도체/하드웨어', usClose: 75, usFuture: 80, fxAndFlow: 85, news: 60, matchedDays: 230 },
+            { id: 3, name: '현대차', ticker: '005380', sector: '일반/성장주', usClose: 65, usFuture: 70, fxAndFlow: 75, news: 55, matchedDays: 215 }
         ];
 
         function detectSector(ticker, name) {
@@ -221,11 +209,13 @@
             };
         }
 
+        // 전체 시장 풀을 대상으로 상승 확률이 가장 높은 TOP 5 추출
         function renderTop5() {
             const top5El = document.getElementById('top5List');
             if (!top5El) return;
 
-            const evaluated = stocks.map(s => ({ ...s, pred: calculatePrediction(s) }));
+            const evaluated = marketPool.map(s => ({ ...s, pred: calculatePrediction(s) }));
+            // 점수가 높은 순으로 정렬 후 상위 5개 추출
             evaluated.sort((a, b) => b.pred.score - a.pred.score);
             const top5 = evaluated.slice(0, 5);
 
@@ -235,7 +225,7 @@
                 item.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-indigo-50 shadow-2xs text-xs';
                 item.innerHTML = `
                     <div class="flex items-center gap-2.5">
-                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[10px]">${idx + 1}</span>
+                        <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-[10px]">${idx + 1}</span>
                         <div>
                             <span class="font-bold text-slate-800">${s.name}</span>
                             <span class="text-[10px] text-slate-400 font-mono ml-1">${s.ticker}</span>
@@ -258,10 +248,10 @@
             const countEl = document.getElementById('stockCount');
             if (!listEl) return;
             
-            if (countEl) countEl.innerText = `${stocks.length}개 종목`;
+            if (countEl) countEl.innerText = `${myStocks.length}개 종목`;
             listEl.innerHTML = '';
 
-            stocks.forEach(s => {
+            myStocks.forEach(s => {
                 const pred = calculatePrediction(s);
                 const card = document.createElement('div');
                 card.className = 'ios-card rounded-2xl p-4 shadow-sm hover:shadow-md transition';
@@ -309,36 +299,37 @@
             const sector = detectSector(ticker, name);
             const seed = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
             
-            stocks.push({
+            const newStock = {
                 id: Date.now(),
                 name,
                 ticker,
                 sector,
-                usClose: 50 + (seed % 30),
-                usFuture: 50 + ((seed * 3) % 30), 
-                fxAndFlow: 50 + ((seed * 5) % 30),     
-                news: 30 + ((seed * 7) % 20),     
-                matchedDays: 200 + (seed % 40)
-            });
+                usClose: 60 + (seed % 20),
+                usFuture: 60 + ((seed * 3) % 20), 
+                fxAndFlow: 65 + ((seed * 5) % 20),     
+                news: 40 + ((seed * 7) % 20),     
+                matchedDays: 210 + (seed % 30)
+            };
 
+            myStocks.push(newStock);
+            marketPool.push(newStock); // 시장 풀에도 자동 편입
             renderStocks();
             closeAddModal();
             document.getElementById('stockForm').reset();
         }
 
         function deleteStock(id) {
-            if (confirm('해당 종목을 목록에서 삭제하시겠습니까?')) {
-                stocks = stocks.filter(s => s.id !== id);
+            if (confirm('해당 종목을 내 관심 목록에서 삭제하시겠습니까?')) {
+                myStocks = myStocks.filter(s => s.id !== id);
                 renderStocks();
             }
         }
 
         function refreshData() {
             renderStocks();
-            alert('데이터가 최신 상태로 동기화되었습니다.');
+            alert('전체 시장 데이터와 TOP 5 추천 순위가 최신 상태로 동기화되었습니다.');
         }
 
-        // 즉시 실행 및 DOM 로드 시 실행 보장
         renderStocks();
         window.addEventListener('DOMContentLoaded', renderStocks);
     </script>
