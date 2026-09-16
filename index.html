@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0f172a">
-<title>ÁÖ°¡ ¹æÇâ¼º ºÐ¼® ´ë½Ãº¸µå</title>
+<title>ì£¼ê°€ ë°©í–¥ì„± ë¶„ì„ ëŒ€ì‹œë³´ë“œ</title>
 
 <style>
 :root{
@@ -486,8 +486,8 @@ button:hover{
 
 <header class="header">
   <div class="header-inner">
-    <h1>?? ÁÖ°¡ ¹æÇâ¼º ºÐ¼® ´ë½Ãº¸µå</h1>
-    <p>¹ÌÁõ½Ã 40% ¡¤ Á¾¸ñ °ü·Ã ´º½º 30% ¡¤ ¹Ì±¹ ¼±¹° 30%</p>
+    <h1>?? ì£¼ê°€ ë°©í–¥ì„± ë¶„ì„ ëŒ€ì‹œë³´ë“œ</h1>
+    <p>ë¯¸ì¦ì‹œ 40% Â· ì¢…ëª© ê´€ë ¨ ë‰´ìŠ¤ 30% Â· ë¯¸êµ­ ì„ ë¬¼ 30%</p>
   </div>
 </header>
 
@@ -495,12 +495,12 @@ button:hover{
 
   <section class="toolbar">
     <div class="toolbar-left">
-      <button class="btn-primary" id="addStockBtn">£« Á¾¸ñ µî·Ï</button>
-      <button class="btn-secondary" id="resetBtn">ÃÊ±â ¿¹½Ã º¹¿ø</button>
+      <button class="btn-primary" id="addStockBtn">ï¼‹ ì¢…ëª© ë“±ë¡</button>
+      <button class="btn-secondary" id="resetBtn">ì´ˆê¸° ì˜ˆì‹œ ë³µì›</button>
     </div>
     <div class="toolbar-right">
-      <button class="btn-secondary" id="saveBtn">ÀúÀå</button>
-      <button class="btn-secondary" id="refreshBtn">ºÐ¼® °»½Å</button>
+      <button class="btn-secondary" id="saveBtn">ì €ìž¥</button>
+      <button class="btn-secondary" id="refreshBtn">ë¶„ì„ ê°±ì‹ </button>
     </div>
   </section>
 
@@ -508,19 +508,19 @@ button:hover{
 
   <section class="summary">
     <div class="summary-card">
-      <div class="summary-label">µî·Ï Á¾¸ñ</div>
+      <div class="summary-label">ë“±ë¡ ì¢…ëª©</div>
       <div class="summary-value" id="totalCount">0</div>
     </div>
     <div class="summary-card">
-      <div class="summary-label">»ó½Â ¿¹»ó</div>
+      <div class="summary-label">ìƒìŠ¹ ì˜ˆìƒ</div>
       <div class="summary-value" id="upCount">0</div>
     </div>
     <div class="summary-card">
-      <div class="summary-label">ÇÏ¶ô ¿¹»ó</div>
+      <div class="summary-label">í•˜ë½ ì˜ˆìƒ</div>
       <div class="summary-value" id="downCount">0</div>
     </div>
     <div class="summary-card">
-      <div class="summary-label">Æò±Õ »ó½Â Á¡¼ö</div>
+      <div class="summary-label">í‰ê·  ìƒìŠ¹ ì ìˆ˜</div>
       <div class="summary-value" id="avgScore">-</div>
     </div>
   </section>
@@ -528,44 +528,44 @@ button:hover{
   <section class="cards" id="stockCards"></section>
 
   <div class="legend">
-    <strong>°è»ê ±âÁØ</strong><br>
-    Á¾ÇÕÁ¡¼ö = ¹ÌÁõ½Ã Á¡¼ö ¡¿ 40% + ´º½º Á¡¼ö ¡¿ 30% + ¹Ì¼±¹° Á¡¼ö ¡¿ 30%<br>
-    50Á¡ ÃÊ°ú: »ó½Â / 50Á¡ ¹Ì¸¸: ÇÏ¶ô / 50Á¡: Áß¸³<br>
-    ¡Ø Ç¥½Ã È®·üÀº ÇöÀç °¡ÁßÁ¡¼ö¸¦ 0~100%·Î Ç¥½ÃÇÑ ¡®»ó½Â °¡´É¼º Á¡¼ö¡¯ÀÌ¸ç,
-    ½ÇÁ¦ Åë°èÀûÀ¸·Î °ËÁõµÈ È®·üÀº ¾Æ´Õ´Ï´Ù.
+    <strong>ê³„ì‚° ê¸°ì¤€</strong><br>
+    ì¢…í•©ì ìˆ˜ = ë¯¸ì¦ì‹œ ì ìˆ˜ Ã— 40% + ë‰´ìŠ¤ ì ìˆ˜ Ã— 30% + ë¯¸ì„ ë¬¼ ì ìˆ˜ Ã— 30%<br>
+    50ì  ì´ˆê³¼: ìƒìŠ¹ / 50ì  ë¯¸ë§Œ: í•˜ë½ / 50ì : ì¤‘ë¦½<br>
+    â€» í‘œì‹œ í™•ë¥ ì€ í˜„ìž¬ ê°€ì¤‘ì ìˆ˜ë¥¼ 0~100%ë¡œ í‘œì‹œí•œ â€˜ìƒìŠ¹ ê°€ëŠ¥ì„± ì ìˆ˜â€™ì´ë©°,
+    ì‹¤ì œ í†µê³„ì ìœ¼ë¡œ ê²€ì¦ëœ í™•ë¥ ì€ ì•„ë‹™ë‹ˆë‹¤.
   </div>
 
   <div class="notice">
-    <strong>ÇöÀç ¹öÀü ¾È³»</strong><br>
-    ÀÌ ¹öÀüÀº ½ÇÁ¦ ±ÝÀ¶ µ¥ÀÌÅÍ API¸¦ ¿¬°áÇÏ±â ÀüÀÇ °è»ê¡¤°ü¸®¿ë ÇÁ·ÎÅäÅ¸ÀÔÀÔ´Ï´Ù.
-    °¢ Á¡¼ö´Â ½½¶óÀÌ´õ·Î ÀÔ·ÂÇÕ´Ï´Ù. ½ÇÁ¦ ÅõÀÚ ÆÇ´Ü¿¡ »ç¿ëÇÏ±â Àü¿¡
-    °ú°Å µ¥ÀÌÅÍ¿Í ºñ±³ÇÏ¿© ¿¹Ãø Á¤È®µµ ¹× È®·ü º¸Á¤ÀÌ ÇÊ¿äÇÕ´Ï´Ù.
+    <strong>í˜„ìž¬ ë²„ì „ ì•ˆë‚´</strong><br>
+    ì´ ë²„ì „ì€ ì‹¤ì œ ê¸ˆìœµ ë°ì´í„° APIë¥¼ ì—°ê²°í•˜ê¸° ì „ì˜ ê³„ì‚°Â·ê´€ë¦¬ìš© í”„ë¡œí† íƒ€ìž…ìž…ë‹ˆë‹¤.
+    ê° ì ìˆ˜ëŠ” ìŠ¬ë¼ì´ë”ë¡œ ìž…ë ¥í•©ë‹ˆë‹¤. ì‹¤ì œ íˆ¬ìž íŒë‹¨ì— ì‚¬ìš©í•˜ê¸° ì „ì—
+    ê³¼ê±° ë°ì´í„°ì™€ ë¹„êµí•˜ì—¬ ì˜ˆì¸¡ ì •í™•ë„ ë° í™•ë¥  ë³´ì •ì´ í•„ìš”í•©ë‹ˆë‹¤.
   </div>
 
 </main>
 
-<!-- Á¾¸ñ µî·Ï ¸ð´Þ -->
+<!-- ì¢…ëª© ë“±ë¡ ëª¨ë‹¬ -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
     <div class="modal-head">
-      <h2>Á¾¸ñ µî·Ï</h2>
-      <button class="btn-secondary btn-small" id="closeModalBtn">´Ý±â</button>
+      <h2>ì¢…ëª© ë“±ë¡</h2>
+      <button class="btn-secondary btn-small" id="closeModalBtn">ë‹«ê¸°</button>
     </div>
 
     <div class="modal-body">
       <div class="form-group">
-        <label for="stockName">Á¾¸ñ¸í</label>
-        <input id="stockName" placeholder="¿¹: »ï¼ºÀüÀÚ" maxlength="40">
+        <label for="stockName">ì¢…ëª©ëª…</label>
+        <input id="stockName" placeholder="ì˜ˆ: ì‚¼ì„±ì „ìž" maxlength="40">
       </div>
 
       <div class="form-group">
-        <label for="stockCode">Á¾¸ñÄÚµå</label>
-        <input id="stockCode" placeholder="¿¹: 005930" maxlength="20">
+        <label for="stockCode">ì¢…ëª©ì½”ë“œ</label>
+        <input id="stockCode" placeholder="ì˜ˆ: 005930" maxlength="20">
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" id="cancelModalBtn">Ãë¼Ò</button>
-        <button class="btn-primary" id="confirmAddBtn">µî·Ï</button>
+        <button class="btn-secondary" id="cancelModalBtn">ì·¨ì†Œ</button>
+        <button class="btn-primary" id="confirmAddBtn">ë“±ë¡</button>
       </div>
     </div>
   </div>
@@ -575,15 +575,15 @@ button:hover{
 "use strict";
 
 /*
-  ÁÖ°¡ ¹æÇâ¼º ºÐ¼® ´ë½Ãº¸µå
+  ì£¼ê°€ ë°©í–¥ì„± ë¶„ì„ ëŒ€ì‹œë³´ë“œ
   ------------------------------------
-  Á¾ÇÕÁ¡¼ö =
-    ¹Ì±¹ Áõ½Ã Á¡¼ö ¡¿ 0.4
-    + °ü·Ã ´º½º Á¡¼ö ¡¿ 0.3
-    + ¹Ì±¹ ¼±¹° Á¡¼ö ¡¿ 0.3
+  ì¢…í•©ì ìˆ˜ =
+    ë¯¸êµ­ ì¦ì‹œ ì ìˆ˜ Ã— 0.4
+    + ê´€ë ¨ ë‰´ìŠ¤ ì ìˆ˜ Ã— 0.3
+    + ë¯¸êµ­ ì„ ë¬¼ ì ìˆ˜ Ã— 0.3
 
-  ÇöÀç´Â API ¿¬°á Àü ÇÁ·ÎÅäÅ¸ÀÔÀÌ¹Ç·Î
-  °¢ Á¡¼ö¸¦ »ç¿ëÀÚ°¡ Á÷Á¢ Á¶Á¤ÇÕ´Ï´Ù.
+  í˜„ìž¬ëŠ” API ì—°ê²° ì „ í”„ë¡œí† íƒ€ìž…ì´ë¯€ë¡œ
+  ê° ì ìˆ˜ë¥¼ ì‚¬ìš©ìžê°€ ì§ì ‘ ì¡°ì •í•©ë‹ˆë‹¤.
 */
 
 const STORAGE_KEY = "stock_direction_dashboard_v1";
@@ -591,32 +591,32 @@ const STORAGE_KEY = "stock_direction_dashboard_v1";
 const DEFAULT_STOCKS = [
   {
     id: crypto.randomUUID(),
-    name: "»ï¼ºÀüÀÚ",
+    name: "ì‚¼ì„±ì „ìž",
     code: "005930",
     usScore: 75,
     newsScore: 65,
     futuresScore: 70,
-    note: "¹ÝµµÃ¼ ¾÷È² ¹× ¹Ì±¹ ±â¼úÁÖ Èå¸§ È®ÀÎ ÇÊ¿ä",
+    note: "ë°˜ë„ì²´ ì—…í™© ë° ë¯¸êµ­ ê¸°ìˆ ì£¼ íë¦„ í™•ì¸ í•„ìš”",
     updatedAt: new Date().toISOString()
   },
   {
     id: crypto.randomUUID(),
-    name: "SKÇÏÀÌ´Ð½º",
+    name: "SKí•˜ì´ë‹‰ìŠ¤",
     code: "000660",
     usScore: 80,
     newsScore: 72,
     futuresScore: 68,
-    note: "HBM¡¤¸Þ¸ð¸® ¾÷È² °ü·Ã ´º½º È®ÀÎ ÇÊ¿ä",
+    note: "HBMÂ·ë©”ëª¨ë¦¬ ì—…í™© ê´€ë ¨ ë‰´ìŠ¤ í™•ì¸ í•„ìš”",
     updatedAt: new Date().toISOString()
   },
   {
     id: crypto.randomUUID(),
-    name: "Çö´ëÂ÷",
+    name: "í˜„ëŒ€ì°¨",
     code: "005380",
     usScore: 55,
     newsScore: 48,
     futuresScore: 60,
-    note: "ÀÚµ¿Â÷ ¼ö¿ä¡¤È¯À²¡¤¹Ì±¹ Á¤Ã¥ °ü·Ã ´º½º È®ÀÎ ÇÊ¿ä",
+    note: "ìžë™ì°¨ ìˆ˜ìš”Â·í™˜ìœ¨Â·ë¯¸êµ­ ì •ì±… ê´€ë ¨ ë‰´ìŠ¤ í™•ì¸ í•„ìš”",
     updatedAt: new Date().toISOString()
   }
 ];
@@ -656,20 +656,20 @@ function calculateScore(stock){
 function getDirection(score){
   if(score > 50){
     return {
-      text: "¡ã »ó½Â",
+      text: "â–² ìƒìŠ¹",
       className: "up"
     };
   }
 
   if(score < 50){
     return {
-      text: "¡å ÇÏ¶ô",
+      text: "â–¼ í•˜ë½",
       className: "down"
     };
   }
 
   return {
-    text: "¡á Áß¸³",
+    text: "â–  ì¤‘ë¦½",
     className: "neutral"
   };
 }
@@ -691,7 +691,7 @@ function formatDate(iso){
 
 function saveStocks(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks));
-  updateStatus("ÇöÀç Á¾¸ñ°ú Á¡¼ö°¡ ºê¶ó¿ìÀú¿¡ ÀúÀåµÇ¾ú½À´Ï´Ù.");
+  updateStatus("í˜„ìž¬ ì¢…ëª©ê³¼ ì ìˆ˜ê°€ ë¸Œë¼ìš°ì €ì— ì €ìž¥ë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 function loadStocks(){
@@ -704,7 +704,7 @@ function loadStocks(){
       if(Array.isArray(parsed)){
         return parsed.map(stock => ({
           id: stock.id || makeId(),
-          name: String(stock.name || "ÀÌ¸§ ¾øÀ½"),
+          name: String(stock.name || "ì´ë¦„ ì—†ìŒ"),
           code: String(stock.code || ""),
           usScore: clamp(safeNumber(stock.usScore, 50), 0, 100),
           newsScore: clamp(safeNumber(stock.newsScore, 50), 0, 100),
@@ -715,7 +715,7 @@ function loadStocks(){
       }
     }
   }catch(error){
-    console.warn("ÀúÀå µ¥ÀÌÅÍ ºÒ·¯¿À±â ½ÇÆÐ", error);
+    console.warn("ì €ìž¥ ë°ì´í„° ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨", error);
   }
 
   return DEFAULT_STOCKS.map(stock => ({
@@ -726,7 +726,7 @@ function loadStocks(){
 
 function updateStatus(message){
   $("#statusText").textContent =
-    message + " ¡¤ " +
+    message + " Â· " +
     new Date().toLocaleString("ko-KR");
 }
 
@@ -738,7 +738,7 @@ function render(){
   if(stocks.length === 0){
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.textContent = "µî·ÏµÈ Á¾¸ñÀÌ ¾ø½À´Ï´Ù. ¡®Á¾¸ñ µî·Ï¡¯ ¹öÆ°À» ´­·¯ Ãß°¡ÇÏ¼¼¿ä.";
+    empty.textContent = "ë“±ë¡ëœ ì¢…ëª©ì´ ì—†ìŠµë‹ˆë‹¤. â€˜ì¢…ëª© ë“±ë¡â€™ ë²„íŠ¼ì„ ëˆŒëŸ¬ ì¶”ê°€í•˜ì„¸ìš”.";
     cards.appendChild(empty);
     updateSummary();
     return;
@@ -770,13 +770,13 @@ function createStockCard(stock){
 
   const code = document.createElement("div");
   code.className = "stock-code";
-  code.textContent = stock.code ? "Á¾¸ñÄÚµå " + stock.code : "Á¾¸ñÄÚµå ¹ÌÀÔ·Â";
+  code.textContent = stock.code ? "ì¢…ëª©ì½”ë“œ " + stock.code : "ì¢…ëª©ì½”ë“œ ë¯¸ìž…ë ¥";
 
   titleBox.append(name, code);
 
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-btn";
-  deleteBtn.textContent = "»èÁ¦";
+  deleteBtn.textContent = "ì‚­ì œ";
   deleteBtn.type = "button";
   deleteBtn.addEventListener("click", () => deleteStock(stock.id));
 
@@ -793,7 +793,7 @@ function createStockCard(stock){
 
   const scoreText = document.createElement("div");
   scoreText.className = "probability-label";
-  scoreText.textContent = "Á¾ÇÕÁ¡¼ö " + score + " / 100";
+  scoreText.textContent = "ì¢…í•©ì ìˆ˜ " + score + " / 100";
 
   directionBox.append(directionText, scoreText);
 
@@ -806,7 +806,7 @@ function createStockCard(stock){
 
   const probabilityLabel = document.createElement("div");
   probabilityLabel.className = "probability-label";
-  probabilityLabel.textContent = "»ó½Â °¡´É¼º Á¡¼ö";
+  probabilityLabel.textContent = "ìƒìŠ¹ ê°€ëŠ¥ì„± ì ìˆ˜";
 
   probability.append(probabilityNumber, probabilityLabel);
   prediction.append(directionBox, probability);
@@ -827,23 +827,23 @@ function createStockCard(stock){
     createFactor(
       stock,
       "usScore",
-      "ÀüÀÏ ¹ÌÁõ½Ã ¿µÇâ",
+      "ì „ì¼ ë¯¸ì¦ì‹œ ì˜í–¥",
       "40%",
-      "´Ù¿ì¡¤S&P500¡¤³ª½º´Ú¡¤¹ÝµµÃ¼Áö¼ö µîÀ» Á¾ÇÕÇÑ Á¡¼ö"
+      "ë‹¤ìš°Â·S&P500Â·ë‚˜ìŠ¤ë‹¥Â·ë°˜ë„ì²´ì§€ìˆ˜ ë“±ì„ ì¢…í•©í•œ ì ìˆ˜"
     ),
     createFactor(
       stock,
       "newsScore",
-      "Á¾¸ñ °ü·Ã ´º½º",
+      "ì¢…ëª© ê´€ë ¨ ë‰´ìŠ¤",
       "30%",
-      "ÃÖ±Ù ´º½ºÀÇ ±àÁ¤¡¤ºÎÁ¤ ¿µÇâ ºÐ¼® Á¡¼ö"
+      "ìµœê·¼ ë‰´ìŠ¤ì˜ ê¸ì •Â·ë¶€ì • ì˜í–¥ ë¶„ì„ ì ìˆ˜"
     ),
     createFactor(
       stock,
       "futuresScore",
-      "¹Ì±¹ ¼±¹°Áö¼ö",
+      "ë¯¸êµ­ ì„ ë¬¼ì§€ìˆ˜",
       "30%",
-      "³ª½º´Ú¡¤S&P500¡¤´Ù¿ì ¼±¹° Èå¸§ Á¡¼ö"
+      "ë‚˜ìŠ¤ë‹¥Â·S&P500Â·ë‹¤ìš° ì„ ë¬¼ íë¦„ ì ìˆ˜"
     )
   );
 
@@ -852,10 +852,10 @@ function createStockCard(stock){
 
   const newsTitle = document.createElement("div");
   newsTitle.className = "news-box-title";
-  newsTitle.textContent = "?? ºÐ¼® ¸Þ¸ð / ÁÖ¿ä ´º½º";
+  newsTitle.textContent = "?? ë¶„ì„ ë©”ëª¨ / ì£¼ìš” ë‰´ìŠ¤";
 
   const textarea = document.createElement("textarea");
-  textarea.placeholder = "°ü·Ã ´º½º, ½ÇÀû, ¼öÁÖ, °ø½Ã µîÀÇ ³»¿ëÀ» ÀÔ·ÂÇÏ¼¼¿ä.";
+  textarea.placeholder = "ê´€ë ¨ ë‰´ìŠ¤, ì‹¤ì , ìˆ˜ì£¼, ê³µì‹œ ë“±ì˜ ë‚´ìš©ì„ ìž…ë ¥í•˜ì„¸ìš”.";
   textarea.value = stock.note || "";
   textarea.maxLength = 1000;
 
@@ -875,11 +875,11 @@ function createStockCard(stock){
 
   const updated = document.createElement("div");
   updated.className = "updated";
-  updated.textContent = "ÃÖ±Ù ¼öÁ¤: " + formatDate(stock.updatedAt);
+  updated.textContent = "ìµœê·¼ ìˆ˜ì •: " + formatDate(stock.updatedAt);
 
   const detailBtn = document.createElement("button");
   detailBtn.className = "btn-secondary btn-small";
-  detailBtn.textContent = "ºÐ¼® ¿ä¾à";
+  detailBtn.textContent = "ë¶„ì„ ìš”ì•½";
   detailBtn.type = "button";
 
   detailBtn.addEventListener("click", () => {
@@ -906,7 +906,7 @@ function createFactor(stock, key, title, weight, description){
 
   const weightEl = document.createElement("div");
   weightEl.className = "factor-weight";
-  weightEl.textContent = "¹Ý¿µ ºñÁß " + weight;
+  weightEl.textContent = "ë°˜ì˜ ë¹„ì¤‘ " + weight;
 
   head.append(titleEl, weightEl);
 
@@ -976,14 +976,14 @@ function updateSummary(){
   $("#totalCount").textContent = total;
   $("#upCount").textContent = up;
   $("#downCount").textContent = down;
-  $("#avgScore").textContent = avg === null ? "-" : avg + "Á¡";
+  $("#avgScore").textContent = avg === null ? "-" : avg + "ì ";
 }
 
 function saveStocksSilently(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stocks));
   }catch(error){
-    console.warn("ÀÚµ¿ ÀúÀå ½ÇÆÐ", error);
+    console.warn("ìžë™ ì €ìž¥ ì‹¤íŒ¨", error);
   }
 }
 
@@ -992,7 +992,7 @@ function deleteStock(id){
   if(!target) return;
 
   const confirmed = confirm(
-    "'" + target.name + "' Á¾¸ñÀ» »èÁ¦ÇÏ½Ã°Ú½À´Ï±î?"
+    "'" + target.name + "' ì¢…ëª©ì„ ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ?"
   );
 
   if(!confirmed) return;
@@ -1000,7 +1000,7 @@ function deleteStock(id){
   stocks = stocks.filter(stock => stock.id !== id);
   saveStocks();
   render();
-  updateStatus("Á¾¸ñÀÌ »èÁ¦µÇ¾ú½À´Ï´Ù.");
+  updateStatus("ì¢…ëª©ì´ ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 function openModal(){
@@ -1019,7 +1019,7 @@ function addStock(){
   const code = $("#stockCode").value.trim();
 
   if(!name){
-    alert("Á¾¸ñ¸íÀ» ÀÔ·ÂÇÏ¼¼¿ä.");
+    alert("ì¢…ëª©ëª…ì„ ìž…ë ¥í•˜ì„¸ìš”.");
     $("#stockName").focus();
     return;
   }
@@ -1029,7 +1029,7 @@ function addStock(){
   );
 
   if(duplicate){
-    alert("ÀÌ¹Ì µî·ÏµÈ Á¾¸ñÀÔ´Ï´Ù.");
+    alert("ì´ë¯¸ ë“±ë¡ëœ ì¢…ëª©ìž…ë‹ˆë‹¤.");
     return;
   }
 
@@ -1047,7 +1047,7 @@ function addStock(){
   saveStocks();
   render();
   closeModal();
-  updateStatus("Á¾¸ñÀÌ µî·ÏµÇ¾ú½À´Ï´Ù.");
+  updateStatus("ì¢…ëª©ì´ ë“±ë¡ë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 function showAnalysisSummary(stock){
@@ -1055,21 +1055,21 @@ function showAnalysisSummary(stock){
   const direction = getDirection(score);
 
   const message =
-    "[" + stock.name + "] ºÐ¼® ¿ä¾à\n\n" +
-    "ÆÇ´Ü: " + direction.text + "\n" +
-    "»ó½Â °¡´É¼º Á¡¼ö: " + score + "%\n\n" +
-    "ÀüÀÏ ¹ÌÁõ½Ã: " + stock.usScore + "Á¡ ¡¿ 40%\n" +
-    "°ü·Ã ´º½º: " + stock.newsScore + "Á¡ ¡¿ 30%\n" +
-    "¹Ì±¹ ¼±¹°: " + stock.futuresScore + "Á¡ ¡¿ 30%\n\n" +
-    "ºÐ¼® ¸Þ¸ð:\n" + (stock.note || "ÀÔ·ÂµÈ ¸Þ¸ð ¾øÀ½") + "\n\n" +
-    "¡Ø º» °á°ú´Â °¡ÁßÁ¡¼ö ±â¹Ý Âü°í ÁöÇ¥ÀÔ´Ï´Ù.";
+    "[" + stock.name + "] ë¶„ì„ ìš”ì•½\n\n" +
+    "íŒë‹¨: " + direction.text + "\n" +
+    "ìƒìŠ¹ ê°€ëŠ¥ì„± ì ìˆ˜: " + score + "%\n\n" +
+    "ì „ì¼ ë¯¸ì¦ì‹œ: " + stock.usScore + "ì  Ã— 40%\n" +
+    "ê´€ë ¨ ë‰´ìŠ¤: " + stock.newsScore + "ì  Ã— 30%\n" +
+    "ë¯¸êµ­ ì„ ë¬¼: " + stock.futuresScore + "ì  Ã— 30%\n\n" +
+    "ë¶„ì„ ë©”ëª¨:\n" + (stock.note || "ìž…ë ¥ëœ ë©”ëª¨ ì—†ìŒ") + "\n\n" +
+    "â€» ë³¸ ê²°ê³¼ëŠ” ê°€ì¤‘ì ìˆ˜ ê¸°ë°˜ ì°¸ê³  ì§€í‘œìž…ë‹ˆë‹¤.";
 
   alert(message);
 }
 
 function resetToDefaults(){
   const confirmed = confirm(
-    "ÇöÀç µî·ÏµÈ Á¾¸ñ°ú Á¡¼ö¸¦ ÃÊ±â ¿¹½Ã·Î º¹¿øÇÏ½Ã°Ú½À´Ï±î?"
+    "í˜„ìž¬ ë“±ë¡ëœ ì¢…ëª©ê³¼ ì ìˆ˜ë¥¼ ì´ˆê¸° ì˜ˆì‹œë¡œ ë³µì›í•˜ì‹œê² ìŠµë‹ˆê¹Œ?"
   );
 
   if(!confirmed) return;
@@ -1082,7 +1082,7 @@ function resetToDefaults(){
 
   saveStocks();
   render();
-  updateStatus("ÃÊ±â ¿¹½Ã°¡ º¹¿øµÇ¾ú½À´Ï´Ù.");
+  updateStatus("ì´ˆê¸° ì˜ˆì‹œê°€ ë³µì›ë˜ì—ˆìŠµë‹ˆë‹¤.");
 }
 
 $("#addStockBtn").addEventListener("click", openModal);
@@ -1096,7 +1096,7 @@ $("#saveBtn").addEventListener("click", () => {
 
 $("#refreshBtn").addEventListener("click", () => {
   render();
-  updateStatus("ÇöÀç Á¡¼ö ±âÁØÀ¸·Î ºÐ¼® °á°ú¸¦ °»½ÅÇß½À´Ï´Ù.");
+  updateStatus("í˜„ìž¬ ì ìˆ˜ ê¸°ì¤€ìœ¼ë¡œ ë¶„ì„ ê²°ê³¼ë¥¼ ê°±ì‹ í–ˆìŠµë‹ˆë‹¤.");
 });
 
 $("#resetBtn").addEventListener("click", resetToDefaults);
@@ -1120,7 +1120,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 render();
-updateStatus("´ë½Ãº¸µå°¡ ÁØºñµÇ¾ú½À´Ï´Ù.");
+updateStatus("ëŒ€ì‹œë³´ë“œê°€ ì¤€ë¹„ë˜ì—ˆìŠµë‹ˆë‹¤.");
 </script>
 
 </body>
