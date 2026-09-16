@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 주가 상승 예측 대시보드 (1년 백테스트 연동)</title>
+    <title>AI 주가 상승 예측 대시보드 (확률 로직 개선형)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome for icons -->
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-slate-800 text-lg leading-tight">StockAI Pro</h1>
-                    <p class="text-xs text-slate-500">최근 1년(250거래일) 유사 패턴 분석 시스템</p>
+                    <p class="text-xs text-slate-500">구간별 대칭 확률 산출 시스템</p>
                 </div>
             </div>
             <button onclick="openAddModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition">
@@ -59,8 +59,8 @@
                     <div id="exchangeRateVal" class="font-bold text-slate-800 text-sm">불러오는 중...</div>
                 </div>
                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                    <div class="text-slate-500 mb-0.5">과거 백테스트 창</div>
-                    <div class="font-bold text-indigo-600 text-sm">최근 1년 (250거래일)</div>
+                    <div class="text-slate-500 mb-0.5">확률 알고리즘</div>
+                    <div class="font-bold text-indigo-600 text-sm">0점 중심 대칭형 적용</div>
                 </div>
             </div>
         </section>
@@ -80,21 +80,15 @@
         <section class="ios-card rounded-2xl p-4 shadow-sm mt-6">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
-                    <i class="fa-solid fa-brain text-purple-500"></i> 알고리즘 가중치 및 백테스트 안내
+                    <i class="fa-solid fa-brain text-purple-500"></i> 확률 산출 기준 안내
                 </h2>
-                <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full font-bold">1년 검증</span>
+                <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full font-bold">로직 개선</span>
             </div>
-            <p class="text-xs text-slate-500 mb-3">미증시(각 35%), 뉴스(15%), 기타(15%) 비율로 산출된 종합 점수를 최근 1년간의 동일 조건 거래일 데이터와 대조합니다.</p>
+            <p class="text-xs text-slate-500 mb-3">종합 점수 0점에 가까울수록 보합 확률이 100%에 수렴하며, 양극단으로 갈수록 상승/하락 확률이 높아지도록 대칭 설계되었습니다.</p>
             
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2 text-xs">
-                <div class="flex justify-between font-medium text-slate-600">
-                    <span>미증시 종가/선물 (각 35%)</span>
-                    <span class="text-indigo-600 font-bold">섹터별 연동</span>
-                </div>
-                <div class="flex justify-between font-medium text-slate-600 pt-1">
-                    <span>뉴스(15%) & 환율/매크로(15%)</span>
-                    <span class="text-slate-700 font-bold">보조 반영</span>
-                </div>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5 text-xs text-slate-600">
+                <div class="flex justify-between"><span>보합 구간 (-20 ~ 20):</span> <strong class="text-amber-600">0점에 가까울수록 확률 ↑</strong></div>
+                <div class="flex justify-between"><span>상승 / 하락 구간 (±20 초과):</span> <strong class="text-indigo-600">극단으로 갈수록 확률 ↑</strong></div>
             </div>
         </section>
 
@@ -111,7 +105,7 @@
                 <i class="fa-solid fa-circle-plus text-lg mb-0.5"></i>
                 종목추가
             </button>
-            <button onclick="alert('최근 1년 백테스트 엔진이 최신 상태로 동기화되어 있습니다.')" class="flex flex-col items-center hover:text-slate-800 transition">
+            <button onclick="alert('확률 엔진이 최신 상태로 동기화되어 있습니다.')" class="flex flex-col items-center hover:text-slate-800 transition">
                 <i class="fa-solid fa-rotate text-lg mb-0.5"></i>
                 동기화
             </button>
@@ -134,10 +128,10 @@
                     <label class="block font-semibold text-slate-700 mb-1">티커 / 종목코드</label>
                     <input type="text" id="stockTicker" required placeholder="예: 000660, 005930, TSLA" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
                 </div>
-                <p class="text-[11px] text-slate-400">※ 등록 시 최근 1년(250거래일) 내 유사 패턴 데이터를 탐색하여 적중률을 계산합니다.</p>
+                <p class="text-[11px] text-slate-400">※ 등록 시 업종 분석 및 대칭 확률 알고리즘이 적용됩니다.</p>
                 <div class="pt-2">
                     <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-200 transition text-sm">
-                        1년 패턴 분석 및 등록
+                        종목 등록 및 분석
                     </button>
                 </div>
             </form>
@@ -145,7 +139,6 @@
     </div>
 
     <script>
-        // 초기 관심 종목 리스트 (1년 백테스트 샘플 데이터 포함)
         let stocks = [
             {
                 id: 1,
@@ -156,28 +149,28 @@
                 usFuture: 80,
                 news: 40,
                 other: 20,
-                matchedDays: 218 // 250일 중 유사 패턴 일치 횟수
+                matchedDays: 218
             },
             {
                 id: 2,
                 name: '삼성전자',
                 ticker: '005930',
                 sector: '반도체/하드웨어',
-                usClose: 15,
-                usFuture: 5,
-                news: -10,
-                other: 0,
-                matchedDays: 194
+                usClose: 5,
+                usFuture: -5,
+                news: 0,
+                other: 0, // 0점에 가까우므로 보합 + 높은 보합 확률 출력
+                matchedDays: 205
             },
             {
                 id: 3,
                 name: '테슬라',
                 ticker: 'TSLA',
                 sector: '글로벌 테크/EV',
-                usClose: -50,
-                usFuture: -60,
-                news: -30,
-                other: -20,
+                usClose: -60,
+                usFuture: -70,
+                news: -40,
+                other: -30,
                 matchedDays: 176
             }
         ];
@@ -208,27 +201,39 @@
         }
 
         function calculatePrediction(s) {
-            // 가중치: 미증시 종가(35%) + 미증시 선물(35%) + 뉴스(15%) + 기타(15%)
             const finalScore = (s.usClose * 0.35) + (s.usFuture * 0.35) + (s.news * 0.15) + (s.other * 0.15);
+            const absScore = Math.abs(finalScore);
             
             let status = '보합';
             let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
             let icon = 'fa-equals';
             let barColor = 'bg-amber-500';
+            let probability = 50;
 
-            if (finalScore >= 15) {
+            // 상태 판별 및 대칭형 확률 계산 로직
+            if (finalScore >= 20) {
                 status = '상승';
                 badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
                 icon = 'fa-arrow-trend-up';
                 barColor = 'bg-emerald-500';
-            } else if (finalScore <= -15) {
+                // 점수가 20일 때 50%, 100일 때 98%
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else if (finalScore <= -20) {
                 status = '하락';
                 badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
                 icon = 'fa-arrow-trend-down';
                 barColor = 'bg-rose-500';
+                // 점수가 -20일 때 50%, -100일 때 98%
+                probability = Math.min(Math.round(50 + ((absScore - 20) / 80) * 48), 98);
+            } else {
+                status = '보합';
+                badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                icon = 'fa-equals';
+                barColor = 'bg-amber-500';
+                // 점수가 0점일 때 95%, 경계인 20점일 때 50%
+                probability = Math.max(Math.round(95 - (absScore / 20) * 45), 50);
             }
 
-            let probability = Math.min(Math.round(50 + Math.abs(finalScore) * 0.45), 98);
             let accuracyPercent = ((s.matchedDays / 250) * 100).toFixed(1);
 
             return {
@@ -319,7 +324,7 @@
                 usFuture: ((seed * 3) % 140) - 70, 
                 news: ((seed * 5) % 100) - 50,     
                 other: ((seed * 7) % 80) - 40,     
-                matchedDays: 160 + (seed % 75) // 최근 250거래일 중 160~235일 범위로 유사 패턴 일치 횟수 부여
+                matchedDays: 160 + (seed % 75)
             };
 
             stocks.push(newStock);
